@@ -1,0 +1,84 @@
+############################
+# BACKEND - Spring Boot
+############################
+
+backend/target/
+
+############################
+# Frontend - Angular
+############################
+
+frontend/node_modules/
+frontend/.angular/
+frontend/dist/
+frontend/coverage/
+
+############################
+# IntelliJ IDEA
+############################
+
+.idea/
+*.iws
+*.iml
+*.ipr
+
+############################
+# VS Code
+############################
+
+.vscode/
+
+############################
+# STS
+############################
+
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+############################
+# NetBeans
+############################
+
+/nbproject/private/
+/nbbuild/
+/nbdist/
+/.nb-gradle/
+build/
+
+############################
+# Logs
+############################
+
+*.log
+npm-debug.log*
+yarn-error.log*
+
+############################
+# H2 Database
+############################
+
+*.mv.db
+*.trace.db
+
+############################
+# Angular Misc
+############################
+
+.sass-cache/
+connect.lock
+libpeerconnection.log
+testem.log
+typings/
+__screenshots__/
+
+############################
+# Operating System
+############################
+
+.DS_Store
+Thumbs.db
