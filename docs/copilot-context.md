@@ -327,9 +327,9 @@ http://localhost:4200
 
 ## Fase 2 - Infraestrutura de Banco
 
-1. Configurar Flyway
-2. Criar V1__init.sql
-3. Criar estrutura inicial do banco
+1. Configurar Flyway ✅
+2. Criar V1__init.sql ✅
+3. Criar estrutura inicial do banco ✅
 
 ---
 
