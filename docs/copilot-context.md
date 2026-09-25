@@ -335,7 +335,7 @@ http://localhost:4200
 
 ## Fase 3 - Segurança
 
-1. Criar entidade Usuario
+1. Criar entidade Usuario ✅
 2. Criar UsuarioRepository
 3. Criar AuthController
 4. Implementar JWT
