@@ -336,10 +336,10 @@ http://localhost:4200
 ## Fase 3 - Segurança
 
 1. Criar entidade Usuario ✅
-2. Criar UsuarioRepository
-3. Criar AuthController
-4. Implementar JWT
-5. Implementar Login
+2. Criar UsuarioRepository ✅
+3. Criar AuthController ✅
+4. Implementar JWT ✅
+5. Implementar Login ✅
 
 ---
 
@@ -390,6 +390,35 @@ Migrar do H2 para PostgreSQL após a conclusão das funcionalidades principais.
 - Maior proximidade com cenários corporativos.
 - Validação das migrations Flyway em banco real.
 - Melhor preparação para deploy futuro.
+
+## Melhorias Futuras de Segurança
+
+### JWT Secret
+
+Situação atual:
+
+A chave JWT está definida diretamente no código para simplificar o desenvolvimento inicial.
+
+Melhoria planejada:
+
+- Remover a chave do código-fonte.
+- Armazenar a chave em variáveis de ambiente.
+- Utilizar uma chave criptograficamente forte.
+- Utilizar configurações separadas por ambiente.
+
+Exemplo futuro:
+
+jwt.secret=${JWT_SECRET}
+
+Motivação:
+
+- Evitar exposição da chave no GitHub.
+- Facilitar a troca de credenciais entre ambientes.
+- Aumentar a segurança da autenticação JWT.
+
+Status:
+
+🟡 Planejado para pós-MVP
 
 ### Planejamento
 
