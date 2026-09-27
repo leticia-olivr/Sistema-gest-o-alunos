@@ -1,270 +1,38 @@
-# Sistema de Gestão de Alunos
+### Contexto de desenvolvimento
 
-## Status Atual
+Este arquivo é o resumo curto para orientar ferramentas e pessoas que trabalham no repositório. A especificação funcional completa fica em [`regras-negocio.md`](regras-negocio.md); a arquitetura implementada em [`arquitetura.md`](arquitetura.md); o estado do schema em [`diagrama-banco.md`](diagrama-banco.md); tarefas em [`backlog.md`](backlog.md); e o fluxo de login em [`autenticacao-login.md`](autenticacao-login.md).
 
-✅ Repositório criado
+## Fonte de verdade
 
-✅ Backend criado
+1. O Protótipo 2.0 define os requisitos funcionais.
+2. O código define o comportamento implementado hoje.
+3. A documentação deve distinguir claramente requisito, implementação e pendência.
 
-✅ Frontend criado
+## Projeto
 
-✅ Angular Material instalado
+- Monorepo: `backend/`, `frontend/`, `docs/`, `bruno/`.
+- Backend: Java 21, Spring Boot 4.1.1, Spring Security, JPA, Flyway, H2, SpringDoc e JJWT.
+- Frontend: Angular 21, TypeScript, Angular Material, standalone components e Reactive Forms.
+- Estrutura backend em camadas: controller, service, repository, entity, DTO, security/config.
+- H2 atual é em memória e contém somente a tabela `usuario`.
+- Existe login JWT; CRUD de alunos/turmas ainda não está implementado.
 
-✅ Swagger funcionando
+## Discrepâncias e prioridades conhecidas
 
-✅ H2 funcionando
+- Protótipo pede login por usuário alfanumérico (mínimo 8); contrato atual usa e-mail.
+- Protótipo exige senha de 8–20 caracteres contendo letras e números; formulário atual só exige preenchimento.
+- Faltam logout, AuthGuard Angular, interceptor Bearer, autorização efetiva por perfil e respostas de erro HTTP padronizadas.
+- Entidade/tabela e endpoints de alunos ainda não existem.
 
-✅ Spring Security configurado
+Não implementar turmas, notas, frequência ou recuperação de senha como parte do escopo obrigatório. Antes de dizer que um requisito está concluído, verificar código e testes.
 
-✅ Git configurado
+## Documentação
 
-✅ Estrutura inicial concluída
-
----
-
-# Arquitetura
-
-Monorepo
-
-```text
-sistema-gestao-alunos/
-│
-├── backend/
-├── frontend/
-├── docs/
-├── bruno/
-├── README.md
-└── .gitignore
-```
-
----
-
-# Backend
-
-## Tecnologias
-
-- Java 21
-- Spring Boot 4.1.1
-- Maven
-- Spring Security
-- Spring Data JPA
-- Flyway
-- H2
-- Swagger/OpenAPI
-
-## Estrutura
-
-```text
-com.leticia.gestaoalunos
-│
-├── config
-├── controller
-├── dto
-│   ├── request
-│   └── response
-├── entity
-├── exception
-├── mapper
-├── repository
-├── security
-├── service
-└── util
-```
-
----
-
-# Frontend
-
-## Tecnologias
-
-- Angular
-- Angular Material
-- TypeScript
-
-## Estrutura
-
-```text
-app
-│
-├── core
-│   ├── guards
-│   ├── interceptors
-│   ├── models
-│   └── services
-│
-├── shared
-│   ├── components
-│   ├── directives
-│   ├── interfaces
-│   └── pipes
-│
-├── layout
-│   ├── header
-│   ├── footer
-│   ├── sidebar
-│   └── main-layout
-│
-└── features
-    ├── auth
-    ├── dashboard
-    ├── alunos
-    └── turmas
-```
-
----
-
-# Regras de Arquitetura
-
-## Utilizar
-
-✅ Arquitetura em Camadas (Layered Architecture)
-
-✅ DTO
-
-✅ Mapper
-
-✅ Spring Data JPA
-
-✅ Flyway
-
-✅ JWT
-
-✅ Angular Standalone
-
-✅ Angular Material
-
-✅ Monorepo
-
----
-
-# Não Utilizar
-
-❌ Microservices
-
-❌ DDD Complexo
-
-❌ CQRS
-
-❌ Event Sourcing
-
-❌ Hexagonal Complexa
-
-❌ Clean Architecture Completa
-
----
-
-# Convenções
-
-## Controllers
-
-``java
-AlunoController 
-        UsuarioController
-AuthController
-``
-
-## Services
-
-``java
-AlunoService
-        UsuarioService
-AuthService
-``
-
-## Repositories
-
-``java
-AlunoRepository 
-        UsuarioRepository
-``
-
-## DTOs
-
-``java
-AlunoRequest
-        AlunoResponse
-
-UsuarioRequest
-        UsuarioResponse
-
-LoginRequest
-        LoginResponse;
-``
-
-## Endpoints
-
-```text
-/api/auth
-/api/alunos
-/api/turmas
-```
-
-Sempre utilizar substantivos no plural.
-
----
-
-# Convenções de Banco
-
-## Tabelas
-
-```text
-usuario
-aluno
-turma
-```
-
-Sempre em minúsculo.
-
-## Colunas
-
-```text
-nome_completo
-data_nascimento
-data_criacao
-```
-
-Sempre em snake_case.
-
----
-
-# Estrutura Git
-
-Branch principal:
-
-```text
-main
-```
-
-Estratégia adotada:
-
-- Projeto individual
-- Sem branches de feature inicialmente
-- Desenvolvimento direto na branch main
-- Commits pequenos e frequentes
-
----
-
-# Dependências Atuais
-
-## Backend
-
-✅ Spring Web
-
-✅ Spring Security
-
-✅ Spring Data JPA
-
-✅ Flyway
-
-✅ H2 Database
-
-✅ SpringDoc OpenAPI (Swagger)
-
-## Frontend
-
-✅ Angular
-
-✅ Angular Router
+- Começar pelo [`README.md`](../README.md) para executar o projeto.
+- Manter requisitos de comportamento em [`regras-negocio.md`](regras-negocio.md).
+- Manter implementação/decisões técnicas em [`arquitetura.md`](arquitetura.md).
+- Atualizar [`diagrama-banco.md`](diagrama-banco.md) junto com migrations.
+- Atualizar [`backlog.md`](backlog.md) ao concluir ou descobrir pendências.
 
 ✅ Angular Material
 
@@ -439,6 +207,6 @@ Status:
 
 # Objetivo do Projeto
 
-Desenvolver um Sistema de Gestão de Alunos utilizando Spring Boot e Angular, aplicando 
-boas práticas de arquitetura, segurança, versionamento de banco de dados e desenvolvimento 
+Desenvolver um Sistema de Gestão de Alunos utilizando Spring Boot e Angular, aplicando
+boas práticas de arquitetura, segurança, versionamento de banco de dados e desenvolvimento
 frontend moderno, priorizando simplicidade, organização e manutenção.
