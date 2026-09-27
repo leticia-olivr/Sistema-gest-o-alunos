@@ -1,0 +1,54 @@
+<main class="login-page">
+  <section class="login-panel" aria-labelledby="login-title">
+    <header class="login-header">
+      <h1 id="login-title">Sistema Gestão de Alunos</h1>
+      <p>Faça login para continuar</p>
+    </header>
+
+    <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>E-mail</mat-label>
+        <input
+          matInput
+          formControlName="email"
+          type="email"
+          autocomplete="username"
+        />
+        @if (form.controls.email.hasError('required') && form.controls.email.touched) {
+          <mat-error>Informe seu e-mail.</mat-error>
+        } @else if (form.controls.email.hasError('email') && form.controls.email.touched) {
+          <mat-error>Digite um e-mail válido.</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Senha</mat-label>
+        <input
+          matInput
+          formControlName="senha"
+          type="password"
+          autocomplete="current-password"
+        />
+        @if (form.controls.senha.hasError('required') && form.controls.senha.touched) {
+          <mat-error>Informe sua senha.</mat-error>
+        }
+      </mat-form-field>
+
+      @if (errorMessage()) {
+        <p class="error-message" role="alert">{{ errorMessage() }}</p>
+      }
+      @if (successMessage()) {
+        <p class="success-message" role="status">{{ successMessage() }}</p>
+      }
+
+      <button
+        mat-flat-button
+        type="submit"
+        class="submit-button"
+        [disabled]="form.invalid || isSubmitting()"
+      >
+        {{ isSubmitting() ? 'Entrando...' : 'Entrar' }}
+      </button>
+    </form>
+  </section>
+</main>

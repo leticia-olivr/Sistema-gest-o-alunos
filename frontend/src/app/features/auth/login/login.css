@@ -1,0 +1,57 @@
+:host {
+  display: block;
+}
+
+.login-page {
+  display: grid;
+  min-height: 100vh;
+  place-items: center;
+  padding: 24px;
+}
+
+.login-panel {
+  width: min(100%, 420px);
+  padding: 32px;
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: 8px;
+  background: var(--mat-sys-surface);
+}
+
+.login-header {
+  margin-bottom: 34px;
+  text-align: center;
+}
+
+.login-header h1 {
+  margin: 0 0 8px;
+  font-size: 24px;
+  font-weight: 500;
+}
+
+.full-width {
+  width: 100%;
+  margin-bottom: 8px;
+}
+
+.submit-button {
+  width: 100%;
+  min-height: 44px;
+}
+
+.error-message,
+.success-message {
+  margin: 0 0 16px;
+}
+
+.error-message,
+.login-header p {
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.error-message {
+  color: var(--mat-sys-error);
+}
+
+.success-message {
+  color: var(--mat-sys-primary);
+}
