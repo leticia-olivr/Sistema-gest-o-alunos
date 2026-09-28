@@ -3,6 +3,7 @@ package com.leticia.gestaoalunos.security;
 import com.leticia.gestaoalunos.entity.Usuario;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
@@ -12,12 +13,11 @@ import java.util.Date;
 @Service
 public class JwtService {
 
-    private static final String SECRET_KEY =
-            "minha-chave-secreta-para-jwt-do-sistema-gestao-alunos";
+    private final SecretKey signInKey;
 
-    private SecretKey getSignInKey() {
-        return Keys.hmacShaKeyFor(
-                SECRET_KEY.getBytes(StandardCharsets.UTF_8)
+    public JwtService(@Value("${jwt.secret}") String secret) {
+        this.signInKey = Keys.hmacShaKeyFor(
+                secret.getBytes(StandardCharsets.UTF_8)
         );
     }
 
@@ -32,23 +32,33 @@ public class JwtService {
                                 System.currentTimeMillis() + 1000 * 60 * 60
                         )
                 )
-                .signWith(getSignInKey())
+                .signWith(signInKey)
                 .compact();
     }
 
-        public String extractUsuario(String token) {
+    public String extractUsuario(String token) {
 
         return Jwts.parser()
-                .verifyWith(getSignInKey())
+                .verifyWith(signInKey)
                 .build()
                 .parseSignedClaims(token)
                 .getPayload()
                 .getSubject();
     }
+
+        public String extractRole(String token) {
+                return Jwts.parser()
+                                .verifyWith(signInKey)
+                                .build()
+                                .parseSignedClaims(token)
+                                .getPayload()
+                                .get("role", String.class);
+        }
+
     private Date extractExpiration(String token) {
 
         return Jwts.parser()
-                .verifyWith(getSignInKey())
+                .verifyWith(signInKey)
                 .build()
                 .parseSignedClaims(token)
                 .getPayload()

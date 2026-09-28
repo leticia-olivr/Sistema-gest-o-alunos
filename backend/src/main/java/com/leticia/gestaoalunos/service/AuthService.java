@@ -3,6 +3,7 @@ package com.leticia.gestaoalunos.service;
 import com.leticia.gestaoalunos.dto.request.LoginRequest;
 import com.leticia.gestaoalunos.dto.response.LoginResponse;
 import com.leticia.gestaoalunos.entity.Usuario;
+import com.leticia.gestaoalunos.exception.InvalidCredentialsException;
 import com.leticia.gestaoalunos.repository.UsuarioRepository;
 import com.leticia.gestaoalunos.security.JwtService;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -29,8 +30,7 @@ public class AuthService {
 
         Usuario usuario = usuarioRepository
             .findByUsuario(request.getUsuario())
-                .orElseThrow(() ->
-                        new RuntimeException("Usuário não encontrado"));
+                .orElseThrow(InvalidCredentialsException::new);
 
         boolean senhaValida = passwordEncoder.matches(
                 request.getSenha(),
@@ -38,7 +38,7 @@ public class AuthService {
         );
 
         if (!senhaValida) {
-            throw new RuntimeException("Credenciais inválidas");
+            throw new InvalidCredentialsException();
         }
 
         String token = jwtService.generateToken(usuario);
