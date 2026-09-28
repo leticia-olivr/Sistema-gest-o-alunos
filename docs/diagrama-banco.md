@@ -29,7 +29,7 @@ erDiagram
 | `ativo`        | BOOLEAN      | Obrigatório, com padrão `TRUE`. O login atual ainda não verifica esse valor. |
 | `data_criacao` | TIMESTAMP    | Obrigatório, com padrão `CURRENT_TIMESTAMP`.                                 |
 
-Origem: migrations `V1__init.sql`, `V2__insert_admin.sql`, `V3__add_usuario_login.sql` e `V4__remove_email_from_usuario.sql`. A migration V3 atribui identificadores às contas existentes e define `admin1234` para o administrador inicial; a migration V4 remove o e-mail da conta de autenticação. A senha permanece armazenada como hash.
+Origem: migrations `V1__init.sql`, `V2__insert_admin.sql`, `V3__add_usuario_login.sql`, `V4__remove_email_from_usuario.sql` e `V5__set_admin_dev_password.sql`. A migration V3 atribui identificadores às contas existentes e define `admin1234` para o administrador inicial; V4 remove o e-mail da conta de autenticação; V5 atualiza o hash para uma senha de desenvolvimento que atende às regras atuais. Não use a credencial seedada em produção.
 
 ## Modelo exigido para alunos (a implementar)
 

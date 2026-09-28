@@ -72,7 +72,7 @@ class AuthExceptionHandlerTests {
         mockMvc.perform(post("/api/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
-                                {"usuario":"admin1234","senha":"Senha123"}
+                                {"usuario":"admin1234","senha":"Senha999"}
                                 """))
                 .andExpect(status().isUnauthorized())
                 .andExpect(content().json(genericError));
@@ -143,4 +143,14 @@ class AuthExceptionHandlerTests {
                         .header("Authorization", "Bearer " + token))
                 .andExpect(status().isNotFound());
     }
+
+        @Test
+        void seededAdminCanLoginWithDevelopmentPassword() throws Exception {
+                mockMvc.perform(post("/api/auth/login")
+                                                .contentType(MediaType.APPLICATION_JSON)
+                                                .content("""
+                                                                {"usuario":"admin1234","senha":"Senha123"}
+                                                                """))
+                                .andExpect(status().isOk());
+        }
 }

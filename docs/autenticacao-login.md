@@ -78,6 +78,8 @@ O corpo enviado ao backend segue os nomes definidos pelo DTO Java `LoginRequest`
 }
 ```
 
+Para execução local com o seed Flyway, use `admin1234` e a senha de desenvolvimento `Senha123`. Essa credencial é pública no projeto e não deve ser usada em produção.
+
 O backend responde com o token:
 
 ```json

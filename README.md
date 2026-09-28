@@ -8,6 +8,7 @@ Monorepo de um sistema para consulta e manutenção de cadastro de alunos. O **P
 - Frontend Angular standalone com login por usuário, proteção de rota, logout local e interceptor Bearer.
 - Backend valida as credenciais, emite JWT, responde `401` para sessão inválida e aplica regras de perfil nos caminhos previstos da API.
 - A área de alunos e seus endpoints ainda não foram implementados; acompanhe o progresso em [`docs/backlog.md`](docs/backlog.md).
+- Conta inicial local: usuário `admin1234`, senha `Senha123`. Credencial somente para desenvolvimento; troque-a antes de usar qualquer ambiente compartilhado ou produção.
 
 ## Requisitos
 
@@ -42,7 +43,7 @@ O Angular inicia por padrão em `http://localhost:4200`. O proxy de desenvolvime
 - H2 Console: `http://localhost:8080/h2-console`
 - JDBC URL local: `jdbc:h2:mem:alunosdb`
 
-O H2 está configurado em memória; os dados são reinicializados quando o backend reinicia. O usuário inicial é inserido por Flyway. Não há senha padrão documentada neste arquivo; consulte a configuração local apropriada.
+O H2 está configurado em memória; os dados são reinicializados quando o backend reinicia. A conta inicial é inserida e atualizada pelas migrations Flyway.
 
 ## Testes e build
 

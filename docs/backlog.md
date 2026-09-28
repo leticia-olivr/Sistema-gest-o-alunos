@@ -61,6 +61,6 @@ Esses itens descrevem o que existe hoje. Eles não significam conformidade compl
 
 ## Decisões necessárias
 
-- A forma de migração da conta inicial foi definida nas migrations V3 e V4.
+- A conta inicial é migrada por V3 a V5; V5 define uma senha de desenvolvimento compatível com as regras de login.
 - Definir onde armazenar fotos (banco, filesystem ou object storage) e limite de retenção.
 - Definir se JWT continuará sendo a sessão ou se será adotado cookie seguro; qualquer alternativa deve abranger backend e frontend.
