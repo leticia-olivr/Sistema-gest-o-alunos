@@ -21,7 +21,7 @@ Este arquivo é o resumo curto para orientar ferramentas e pessoas que trabalham
 
 - Login valida identificador alfanumérico (mínimo 8) e senha (8 a 20 caracteres, letras e números) no frontend e servidor; conta de autenticação não armazena e-mail.
 - Protótipo exige senha de 8 a 20 caracteres contendo letras e números; formulário e API aplicam essa regra.
-- Faltam logout, AuthGuard Angular, interceptor Bearer, autorização efetiva por perfil e respostas de erro HTTP padronizadas.
+- Login inclui logout local, AuthGuard, interceptor Bearer e autorização ADMIN/LEITOR nos caminhos previstos da API; a lista e os endpoints de alunos ainda não existem.
 - Entidade/tabela e endpoints de alunos ainda não existem.
 
 Não implementar turmas, notas, frequência ou recuperação de senha como parte do escopo obrigatório. Antes de dizer que um requisito está concluído, verificar código e testes.
@@ -163,30 +163,7 @@ Migrar do H2 para PostgreSQL após a conclusão das funcionalidades principais.
 
 ### JWT Secret
 
-Situação atual:
-
-A chave JWT está definida diretamente no código para simplificar o desenvolvimento inicial.
-
-Melhoria planejada:
-
-- Remover a chave do código-fonte.
-- Armazenar a chave em variáveis de ambiente.
-- Utilizar uma chave criptograficamente forte.
-- Utilizar configurações separadas por ambiente.
-
-Exemplo futuro:
-
-jwt.secret=${JWT_SECRET}
-
-Motivação:
-
-- Evitar exposição da chave no GitHub.
-- Facilitar a troca de credenciais entre ambientes.
-- Aumentar a segurança da autenticação JWT.
-
-Status:
-
-🟡 Planejado para pós-MVP
+O backend injeta `jwt.secret` da variável de ambiente `JWT_SECRET`; não há valor padrão no repositório. Configure uma chave forte (mínimo 256 bits) fora do controle de versão e use valores separados por ambiente. A aplicação não inicia sem uma chave válida.
 
 ### Planejamento
 

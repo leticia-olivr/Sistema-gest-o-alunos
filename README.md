@@ -5,9 +5,9 @@ Monorepo de um sistema para consulta e manutenção de cadastro de alunos. O **P
 ## Estado atual
 
 - Backend Spring Boot com autenticação JWT, usuário inicial via Flyway, H2 e Swagger.
-- Frontend Angular standalone com Angular Material e tela de login integrada à API.
-- CRUD de alunos/turmas, proteção de rotas no Angular, logout e autorização por perfil ainda não implementados.
-- O contrato atual de login usa e-mail, enquanto o Protótipo 2.0 especifica usuário alfanumérico.
+- Frontend Angular standalone com login por usuário, proteção de rota, logout local e interceptor Bearer.
+- Backend valida as credenciais, emite JWT, responde `401` para sessão inválida e aplica regras de perfil nos caminhos previstos da API.
+- A área de alunos e seus endpoints ainda não foram implementados; acompanhe o progresso em [`docs/backlog.md`](docs/backlog.md).
 
 ## Requisitos
 
@@ -20,6 +20,7 @@ Monorepo de um sistema para consulta e manutenção de cadastro de alunos. O **P
 Inicie o backend em um terminal PowerShell:
 
 ```powershell
+# Configure JWT_SECRET antes; consulte a seção de segredo JWT em docs/autenticacao-login.md.
 cd backend
 .\mvnw.cmd spring-boot:run
 ```

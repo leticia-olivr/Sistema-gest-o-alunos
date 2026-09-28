@@ -9,12 +9,18 @@ Os requisitos oficiais de login e a comparação requisito/implementação estã
 ```text
 frontend/src/app/
 ├── core/
+│   ├── guards/auth.guard.ts
+│   ├── interceptors/auth.interceptor.ts
 │   ├── models/auth.model.ts
-│   └── services/auth.service.ts
+│   └── services/
+│       ├── auth.service.ts
+│       └── auth-session.service.ts
 ├── features/auth/login/
 │   ├── login.ts
 │   ├── login.html
 │   └── login.css
+├── features/dashboard/
+└── layout/main-layout/
 ├── app.config.ts
 └── app.routes.ts
 
@@ -27,7 +33,11 @@ frontend/src/proxy.conf.json
 | `features/auth/login/login.html` | Exibe título, campos de usuário e senha, mensagens e botão de envio.               |
 | `features/auth/login/login.css`  | Centraliza o formulário e define estilos básicos.                                  |
 | `core/models/auth.model.ts`      | Tipagem do pedido e da resposta de login.                                          |
-| `core/services/auth.service.ts`  | Envia a requisição HTTP e persiste o token recebido.                               |
+| `core/services/auth.service.ts`  | Envia a requisição HTTP e delega o armazenamento da sessão.                         |
+| `core/services/auth-session.service.ts` | Persiste/remove o token e verifica sua expiração local.                      |
+| `core/guards/auth.guard.ts`      | Protege a área autenticada e retorna ao login sem sessão válida.                    |
+| `core/interceptors/auth.interceptor.ts` | Envia o Bearer e encerra a sessão local após `401` protegido.              |
+| `layout/main-layout/`            | Exibe o botão de logout na área autenticada e hospeda suas rotas.                   |
 | `app.config.ts`                  | Registra os providers da aplicação, incluindo `HttpClient`.                        |
 | `app.routes.ts`                  | Carrega a página de login em `/login` e redireciona a rota inicial para ela.       |
 | `src/proxy.conf.json`            | Encaminha `/api` para o backend local durante o desenvolvimento Angular.           |
@@ -57,7 +67,7 @@ No template, `[formGroup]` conecta o formulário à página e `formControlName` 
 3. O componente impede o envio se o formulário for inválido ou se já houver uma requisição em andamento.
 4. O componente chama `AuthService.login()` com os valores do formulário.
 5. O serviço envia uma requisição `POST` para `/api/auth/login`.
-6. Em caso de sucesso, o serviço salva o JWT e o componente exibe uma mensagem de confirmação. Em caso de erro, o componente mostra uma mensagem adequada.
+6. Em caso de sucesso, o serviço salva o JWT e o componente navega para a rota protegida de retorno ou para `/inicio`. Em caso de erro, o componente mostra uma mensagem adequada.
 
 O corpo enviado ao backend segue os nomes definidos pelo DTO Java `LoginRequest`:
 
@@ -78,19 +88,21 @@ O backend responde com o token:
 
 ## Armazenamento do JWT
 
-O `AuthService` usa o operador RxJS `tap` para executar uma ação quando a resposta chega com sucesso:
+O `AuthService` usa o operador RxJS `tap` para salvar a resposta na sessão local quando o login termina com sucesso:
 
 ```ts
-.pipe(tap(({ token }) => localStorage.setItem(this.tokenStorageKey, token)));
+.pipe(tap(({ token }) => this.session.saveToken(token)));
 ```
 
-A chave usada no navegador é `siga_auth_token`. O método `getToken()` do serviço lê o valor novamente do `localStorage`.
+A chave usada no navegador é `siga_auth_token`, gerenciada pelo `AuthSessionService`. O guard verifica o campo `exp` para não manter uma sessão local expirada; a assinatura continua sendo validada pelo backend.
 
-O token só é armazenado após uma resposta de sucesso. A implementação atual não remove o token por logout e ainda não o adiciona automaticamente a chamadas protegidas; interceptor e logout são etapas futuras.
+O token só é armazenado após uma resposta de sucesso. O comando **Sair** remove essa chave e retorna a `/login`; isso encerra a sessão local, sem revogar cópias do JWT já emitido no servidor.
 
 ## Tratamento de erros
 
-- HTTP `401` ou `403`: informa genericamente que o usuário ou a senha estão incorretos.
+- HTTP `401`: usuário inexistente e senha incorreta retornam o mesmo corpo genérico; a interface informa que usuário ou senha estão incorretos.
+- HTTP `400`: o servidor rejeita os campos que não atendem às regras de validação.
+- HTTP `403`: a interface também apresenta mensagem genérica de credenciais.
 - Status `0`: informa que não foi possível conectar ao servidor, por exemplo, se o backend estiver parado.
 - Outros erros: exibe uma mensagem genérica.
 
@@ -100,11 +112,29 @@ O backend não habilita CORS para chamadas diretas do navegador. Durante o desen
 
 O proxy é configurado em `frontend/src/proxy.conf.json` e referenciado pela configuração `serve` do Angular em `frontend/angular.json`. Ele é destinado ao servidor de desenvolvimento; a configuração de proxy para produção depende do servidor que hospedar a aplicação.
 
+## Segredo JWT por ambiente
+
+O backend lê `jwt.secret` da variável de ambiente `JWT_SECRET`. Não há segredo padrão: a aplicação falha ao iniciar se a variável estiver ausente ou se a chave tiver menos de 256 bits. Em produção, injete a variável por um gerenciador de segredos; não grave o valor no repositório nem em arquivos de configuração versionados.
+
+Para gerar uma chave local temporária no PowerShell e iniciar o backend na mesma sessão:
+
+```powershell
+$bytes = New-Object byte[] 32
+$generator = [System.Security.Cryptography.RandomNumberGenerator]::Create()
+$generator.GetBytes($bytes)
+$generator.Dispose()
+$env:JWT_SECRET = [Convert]::ToBase64String($bytes)
+Push-Location backend
+.\mvnw.cmd spring-boot:run
+Pop-Location
+```
+
+Uma nova chave invalida os JWTs assinados pela chave anterior; será necessário entrar novamente após a troca.
+
 ## Limites desta etapa
 
-- Não há `AuthGuard` protegendo rotas.
-- Não há interceptor enviando o JWT no cabeçalho `Authorization`.
-- Após o login, a tela mostra uma confirmação, mas ainda não redireciona para um dashboard.
+- O login navega para `/inicio`, uma área protegida mínima com logout. A listagem de alunos ainda está pendente no P1.
+- O interceptor trata `401` de APIs protegidas como sessão expirada; um `401` do próprio endpoint de login continua sendo exibido como credencial inválida.
 - O token fica no `localStorage`, que pode ser acessado por JavaScript executado na mesma origem. Para aplicações com exigência de segurança maior, avalie uma estratégia de sessão com cookie `HttpOnly`, `Secure` e `SameSite`, em conjunto com o backend.
 
 ## Backend
@@ -137,8 +167,8 @@ backend/src/main/java/com/leticia/gestaoalunos/
 | `repository/UsuarioRepository.java`     | Busca o usuário pelo identificador com `findByUsuario`.                                            |
 | `entity/Usuario.java`                   | Representa os dados persistidos do usuário, incluindo identificador, hash da senha, perfil e status ativo. |
 | `security/JwtService.java`              | Gera e valida tokens JWT e extrai o identificador do subject.                                       |
-| `security/JwtAuthenticationFilter.java` | Lê o token Bearer em requisições e estabelece a autenticação no contexto Spring Security.           |
-| `config/SecurityConfig.java`            | Configura BCrypt, rotas públicas/protegidas e posição do filtro JWT na cadeia de segurança.         |
+| `security/JwtAuthenticationFilter.java` | Valida o token e converte o perfil em autoridade Spring Security.                                   |
+| `config/SecurityConfig.java`            | Configura rotas públicas, `401`, leitura para ADMIN/LEITOR e escrita restrita a ADMIN.              |
 
 ### Fluxo do endpoint
 
@@ -172,19 +202,19 @@ O `JwtAuthenticationFilter` é executado antes do filtro padrão de usuário e s
 Authorization: Bearer <jwt>
 ```
 
-Quando encontra um token, extrai o identificador, busca o usuário, valida a assinatura, o identificador e a expiração e registra a autenticação em `SecurityContextHolder`. Tokens emitidos antes desta alteração tinham o e-mail no `subject` e não autenticam mais; é necessário entrar novamente. Sem um token válido, o filtro continua a cadeia sem estabelecer uma autenticação; a decisão de permitir ou negar a rota cabe às regras do Spring Security.
+Quando encontra um token, extrai o identificador, busca o usuário, valida a assinatura, o identificador e a expiração e registra a autenticação em `SecurityContextHolder`. Tokens emitidos antes da troca do `subject` de e-mail para identificador não autenticam mais; é necessário entrar novamente. Se o token estiver malformado ou expirado, o filtro limpa o contexto e continua sem autenticação; uma rota protegida responde `401`.
 
 ### Regras de acesso
 
-Em `SecurityConfig`, as rotas `/api/auth/**`, `/swagger-ui/**`, `/v3/api-docs/**` e `/h2-console/**` são públicas. As demais rotas exigem que a requisição esteja autenticada. O endpoint de login, portanto, pode ser chamado sem JWT.
+Em `SecurityConfig`, as rotas `/api/auth/**`, `/swagger-ui/**`, `/v3/api-docs/**` e `/h2-console/**` são públicas. `GET /api/alunos/**` aceita `ROLE_ADMIN` e `ROLE_LEITOR`; os demais métodos nesse prefixo e `/api/admin/**` exigem `ROLE_ADMIN`. Outras rotas de API aceitam somente os dois perfis conhecidos. O endpoint de login, portanto, pode ser chamado sem JWT.
 
-O filtro não adiciona autoridades ao objeto de autenticação (`authorities` é `null`). Embora o token contenha a claim `role`, ainda não há autorização por perfil/role implementada.
+O filtro confere se a claim `role` assinada corresponde ao perfil atual persistido e registra `ROLE_ADMIN` ou `ROLE_LEITOR` no contexto. A API de alunos ainda não foi criada; as regras de segurança já estão configuradas para seus caminhos previstos.
 
 ### Tratamento de erros e itens a revisar
 
-- O serviço lança `RuntimeException` para usuário não encontrado ou senha inválida. Não há `@ControllerAdvice` ou mapeamento explícito dessas exceções para um formato/status HTTP estável; esse contrato deve ser padronizado antes de depender de códigos específicos no cliente.
+- A exceção `InvalidCredentialsException` é mapeada por `AuthExceptionHandler` para HTTP `401` e a mesma mensagem genérica nos casos de usuário inexistente ou senha incorreta.
 - A propriedade `ativo` existe na entidade, mas o fluxo atual de login não verifica se o usuário está ativo.
-- A chave JWT está definida como constante no código. Antes de produção, mova-a para configuração externa protegida, use uma chave forte e rotacione a chave atual.
+- A chave JWT é injetada pela variável `JWT_SECRET`; mantenha-a protegida e use valores diferentes por ambiente.
 - O filtro não captura explicitamente exceções de token malformado ou assinatura inválida. Convém convertê-las em uma resposta de autenticação não autorizada, sem interromper a requisição com erro inesperado.
 - O endpoint ainda não aplica validação Bean Validation (`@Valid`) ao DTO de entrada.
 - A configuração atual não define CORS. O proxy do Angular resolve isso no desenvolvimento local; em produção, o servidor precisa configurar o proxy ou o backend precisa permitir explicitamente a origem do frontend.

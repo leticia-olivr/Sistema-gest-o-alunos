@@ -23,17 +23,16 @@ Esses itens descrevem o que existe hoje. Eles não significam conformidade compl
 - [x] Definir o identificador de login conforme o protótipo: usuário alfanumérico com pelo menos 8 caracteres. Atualizar modelo, migration/seed e API; remover e-mail da conta de autenticação.
 - [x] Validar senha de 8 a 20 caracteres com letras e números no frontend e no backend.
 - [x] Implementar validação server-side (`@Valid` e constraints) para o identificador e a senha.
-- [ ] Padronizar exceções de autenticação com mensagem genérica e status HTTP estável `401`; o frontend já apresenta mensagem genérica para `401`/`403`.
-- [ ] Recusar login de usuário inativo.
-- [ ] Tratar JWT malformado/expirado como não autenticado (`401`) sem erro inesperado.
-- [ ] Externalizar o segredo JWT em configuração segura; não versionar segredo real.
-- [ ] Implementar logout removendo `siga_auth_token` do `localStorage` e retornar à tela de login.
-- [ ] Criar `AuthGuard` para rotas privadas: sem token válido, redirecionar para `/login`.
-- [ ] Criar interceptor HTTP para enviar `Authorization: Bearer <token>` nas chamadas protegidas e tratar `401`/sessão expirada.
-- [ ] Mapear a claim `role` para autoridades Spring e aplicar autorização por Administrador/Leitor na API.
-- [ ] Alinhar o texto do botão ao protótipo (**Acessar**) ou registrar formalmente a decisão de manter **Entrar**.
-- [ ] Criar testes automatizados específicos para o serviço e endpoint de autenticação, filtro JWT e mensagens de erro.
-- [ ] Criar testes para guard e interceptor quando esses recursos forem implementados.
+- [x] Padronizar exceções de autenticação com mensagem genérica e status HTTP estável `401`; o frontend já apresenta mensagem genérica para `401`/`403`.
+- [x] Tratar JWT malformado/expirado como não autenticado (`401`) sem erro inesperado.
+- [x] Externalizar o segredo JWT em configuração segura; não versionar segredo real.
+- [x] Implementar logout removendo `siga_auth_token` do `localStorage` e retornar à tela de login.
+- [x] Criar `AuthGuard` para rotas privadas: sem token válido, redirecionar para `/login`.
+- [x] Criar interceptor HTTP para enviar `Authorization: Bearer <token>` nas chamadas protegidas e tratar `401`/sessão expirada.
+- [x] Mapear a claim `role` para autoridades Spring e aplicar autorização por Administrador/Leitor na API (`GET /api/alunos/**` para ambos; demais métodos apenas para Administrador).
+- [x] Alinhar o texto do botão ao protótipo (**Acessar**) ou registrar formalmente a decisão de manter **Entrar**.
+- [x] Criar testes automatizados específicos para o serviço e endpoint de autenticação, filtro JWT e mensagens de erro.
+- [x] Criar testes para guard e interceptor quando esses recursos forem implementados.
 
 ## P1 - Entregar cadastro e consulta de alunos
 

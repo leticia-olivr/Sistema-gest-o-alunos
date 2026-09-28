@@ -89,7 +89,7 @@ O contrato atual envia `usuario` e `senha`. A conta de autenticação não armaz
 - Senhas são comparadas com BCrypt. O JWT inclui o identificador de usuário no `subject`, claim `role` e validade de uma hora.
 - O JWT fica em `localStorage` sob a chave `siga_auth_token`.
 
-Limitações conhecidas: segredo JWT fixo no código; não há interceptor Angular, AuthGuard, logout ou autorização efetiva por role; usuário inativo não é recusado no login; exceções do login não têm mapeamento HTTP centralizado; CORS não está configurado no backend. Detalhes em [`autenticacao-login.md`](autenticacao-login.md).
+Limitações conhecidas: a área `/inicio` é apenas a entrada protegida e a API de alunos ainda não existe; CORS não está configurado no backend. Logout, guard, interceptor e matriz de perfis estão implementados. O segredo JWT é configurado pela variável de ambiente `JWT_SECRET`. Detalhes em [`autenticacao-login.md`](autenticacao-login.md).
 
 ## Persistência
 
