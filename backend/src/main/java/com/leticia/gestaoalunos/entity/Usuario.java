@@ -14,8 +14,8 @@ public class Usuario {
     @Column(nullable = false, length = 150)
     private String nome;
 
-    @Column(nullable = false, unique = true, length = 150)
-    private String email;
+    @Column(nullable = false, unique = true, length = 50)
+    private String usuario;
 
     @Column(nullable = false)
     private String senha;
@@ -34,13 +34,13 @@ public class Usuario {
 
     public Usuario(
             String nome,
-            String email,
+            String usuario,
             String senha,
             String role,
             Boolean ativo
     ) {
         this.nome = nome;
-        this.email = email;
+        this.usuario = usuario;
         this.senha = senha;
         this.role = role;
         this.ativo = ativo;
@@ -54,8 +54,8 @@ public class Usuario {
         return nome;
     }
 
-    public String getEmail() {
-        return email;
+    public String getUsuario() {
+        return usuario;
     }
 
     public String getSenha() {
@@ -86,8 +86,8 @@ public class Usuario {
         this.senha = senha;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setUsuario(String usuario) {
+        this.usuario = usuario;
     }
 
     public void setNome(String nome) {

@@ -39,7 +39,7 @@ A API deve validar as permissões. Esconder um botão na interface não substitu
 | RN-007 | Rota protegida sem sessão válida deve redirecionar ao login; a API deve responder `401`.   |
 | RN-008 | Disponibilizar logout e invalidar a sessão local.                                          |
 
-**Divergência atual:** o código usa e-mail no frontend e no DTO do backend, não o identificador alfanumérico descrito pelo protótipo. A implementação também não valida o comprimento/composição requeridos para usuário e senha. Ver [`autenticacao-login.md`](autenticacao-login.md).
+**Estado atual:** o login valida `usuario` alfanumérico com mínimo de 8 caracteres e senha de 8 a 20 caracteres contendo letras e números, tanto no formulário quanto no servidor. A conta de autenticação não armazena e-mail. Ver [`autenticacao-login.md`](autenticacao-login.md) e [`backlog.md`](backlog.md).
 
 ## 2. Listagem e filtros (RN-009 a RN-021)
 

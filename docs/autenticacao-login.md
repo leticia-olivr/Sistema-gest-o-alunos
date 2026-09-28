@@ -2,7 +2,7 @@
 
 Este documento descreve o fluxo de login implementado no frontend Angular e sua integração com o endpoint JWT do backend.
 
-Os requisitos oficiais de login e a comparação requisito/implementação estão em [`regras-negocio.md`](regras-negocio.md#1-login-rn-001-a-rn-008). Este documento explica o código atual, que ainda diverge do protótipo no identificador e nas regras de senha.
+Os requisitos oficiais de login e a comparação requisito/implementação estão em [`regras-negocio.md`](regras-negocio.md#1-login-rn-001-a-rn-008). O identificador e as regras de senha do protótipo são validados no frontend e no servidor.
 
 ## Arquivos envolvidos
 
@@ -24,7 +24,7 @@ frontend/src/proxy.conf.json
 | Arquivo                          | Responsabilidade                                                                   |
 | -------------------------------- | ---------------------------------------------------------------------------------- |
 | `features/auth/login/login.ts`   | Define o componente, o formulário reativo, valida os dados e trata sucesso e erro. |
-| `features/auth/login/login.html` | Exibe título, campos de e-mail e senha, mensagens e botão de envio.                |
+| `features/auth/login/login.html` | Exibe título, campos de usuário e senha, mensagens e botão de envio.               |
 | `features/auth/login/login.css`  | Centraliza o formulário e define estilos básicos.                                  |
 | `core/models/auth.model.ts`      | Tipagem do pedido e da resposta de login.                                          |
 | `core/services/auth.service.ts`  | Envia a requisição HTTP e persiste o token recebido.                               |
@@ -38,21 +38,21 @@ O componente cria o formulário usando `FormBuilder`:
 
 ```ts
 this.formBuilder.nonNullable.group({
-  email: ["", [Validators.required, Validators.email]],
-  senha: ["", Validators.required],
+  usuario: ["", [Validators.required, Validators.minLength(8), Validators.pattern(/^[a-zA-Z0-9]+$/)]],
+  senha: ["", [Validators.required, Validators.minLength(8), Validators.maxLength(20), Validators.pattern(/^(?=.*[A-Za-z])(?=.*[0-9]).+$/)]],
 });
 ```
 
 O formulário possui dois controles:
 
-- `email`: obrigatório e validado como endereço de e-mail.
-- `senha`: obrigatório.
+- `usuario`: obrigatório, com pelo menos 8 caracteres e somente letras e números.
+- `senha`: obrigatória, entre 8 e 20 caracteres, com pelo menos uma letra e um número.
 
 No template, `[formGroup]` conecta o formulário à página e `formControlName` conecta cada campo ao respectivo controle. Isso permite consultar o estado do formulário, como `form.invalid`, e exibir erros de validação.
 
 ## Envio do login
 
-1. A pessoa preenche e-mail e senha e pressiona **Entrar**.
+1. A pessoa preenche usuário e senha e pressiona **Acessar**.
 2. O evento `(ngSubmit)` chama o método `submit()` do componente.
 3. O componente impede o envio se o formulário for inválido ou se já houver uma requisição em andamento.
 4. O componente chama `AuthService.login()` com os valores do formulário.
@@ -63,7 +63,7 @@ O corpo enviado ao backend segue os nomes definidos pelo DTO Java `LoginRequest`
 
 ```json
 {
-  "email": "admin@exemplo.com",
+  "usuario": "admin1234",
   "senha": "sua-senha"
 }
 ```
@@ -90,7 +90,7 @@ O token só é armazenado após uma resposta de sucesso. A implementação atual
 
 ## Tratamento de erros
 
-- HTTP `401` ou `403`: informa que o e-mail ou a senha estão incorretos.
+- HTTP `401` ou `403`: informa genericamente que o usuário ou a senha estão incorretos.
 - Status `0`: informa que não foi possível conectar ao servidor, por exemplo, se o backend estiver parado.
 - Outros erros: exibe uma mensagem genérica.
 
@@ -131,30 +131,32 @@ backend/src/main/java/com/leticia/gestaoalunos/
 | Arquivo                                 | Responsabilidade                                                                                    |
 | --------------------------------------- | --------------------------------------------------------------------------------------------------- |
 | `controller/AuthController.java`        | Expõe `POST /api/auth/login` e encaminha o pedido ao serviço.                                       |
-| `dto/request/LoginRequest.java`         | Recebe `email` e `senha` enviados pelo cliente.                                                     |
+| `dto/request/LoginRequest.java`         | Recebe `usuario` e `senha` enviados pelo cliente.                                                   |
 | `dto/response/LoginResponse.java`       | Devolve o token no campo `token`.                                                                   |
 | `service/AuthService.java`              | Busca o usuário, verifica a senha BCrypt e solicita a geração do token.                             |
-| `repository/UsuarioRepository.java`     | Busca o usuário pelo e-mail com `findByEmail`.                                                      |
-| `entity/Usuario.java`                   | Representa os dados persistidos do usuário, incluindo e-mail, hash da senha, perfil e status ativo. |
-| `security/JwtService.java`              | Gera e valida tokens JWT e extrai o e-mail do subject.                                              |
+| `repository/UsuarioRepository.java`     | Busca o usuário pelo identificador com `findByUsuario`.                                            |
+| `entity/Usuario.java`                   | Representa os dados persistidos do usuário, incluindo identificador, hash da senha, perfil e status ativo. |
+| `security/JwtService.java`              | Gera e valida tokens JWT e extrai o identificador do subject.                                       |
 | `security/JwtAuthenticationFilter.java` | Lê o token Bearer em requisições e estabelece a autenticação no contexto Spring Security.           |
 | `config/SecurityConfig.java`            | Configura BCrypt, rotas públicas/protegidas e posição do filtro JWT na cadeia de segurança.         |
 
 ### Fluxo do endpoint
 
 1. `AuthController` recebe o JSON e o converte em `LoginRequest`.
-2. `AuthService` chama `UsuarioRepository.findByEmail()`.
+2. `AuthService` chama `UsuarioRepository.findByUsuario()`.
 3. Se encontrar o usuário, compara a senha enviada com o hash salvo usando `PasswordEncoder.matches()`.
 4. Se a comparação passar, chama `JwtService.generateToken(usuario)`.
 5. O controller devolve `LoginResponse`, serializado como JSON com o campo `token`.
 
-O DTO de pedido usa as propriedades `email` e `senha`. A senha recebida é comparada com o hash BCrypt armazenado; o backend não deve armazenar a senha em texto puro.
+O DTO de pedido usa as propriedades `usuario` e `senha`. A senha recebida é comparada com o hash BCrypt armazenado; o backend não deve armazenar a senha em texto puro. A conta de autenticação não armazena e-mail.
+
+O controller aplica `@Valid` ao DTO. O servidor rejeita o pedido com HTTP `400` se usuário ou senha não atenderem às constraints; a validação ocorre antes da busca da conta e da comparação BCrypt.
 
 ### Conteúdo e duração do JWT
 
 O `JwtService` monta um token com:
 
-- `subject`: e-mail do usuário;
+- `subject`: identificador de usuário;
 - claim `role`: perfil atual do usuário;
 - `issuedAt`: instante de emissão;
 - `expiration`: uma hora após a emissão;
@@ -170,7 +172,7 @@ O `JwtAuthenticationFilter` é executado antes do filtro padrão de usuário e s
 Authorization: Bearer <jwt>
 ```
 
-Quando encontra um token, extrai o e-mail, busca o usuário, valida a assinatura, o e-mail e a expiração e registra a autenticação em `SecurityContextHolder`. Sem um token válido, o filtro continua a cadeia sem estabelecer uma autenticação; a decisão de permitir ou negar a rota cabe às regras do Spring Security.
+Quando encontra um token, extrai o identificador, busca o usuário, valida a assinatura, o identificador e a expiração e registra a autenticação em `SecurityContextHolder`. Tokens emitidos antes desta alteração tinham o e-mail no `subject` e não autenticam mais; é necessário entrar novamente. Sem um token válido, o filtro continua a cadeia sem estabelecer uma autenticação; a decisão de permitir ou negar a rota cabe às regras do Spring Security.
 
 ### Regras de acesso
 

@@ -3,6 +3,7 @@ package com.leticia.gestaoalunos.controller;
 import com.leticia.gestaoalunos.dto.request.LoginRequest;
 import com.leticia.gestaoalunos.dto.response.LoginResponse;
 import com.leticia.gestaoalunos.service.AuthService;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -17,7 +18,7 @@ public class AuthController {
 
     @PostMapping("/login")
     public LoginResponse login(
-            @RequestBody LoginRequest request
+            @Valid @RequestBody LoginRequest request
     ) {
         return authService.login(request);
     }

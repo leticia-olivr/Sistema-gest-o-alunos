@@ -7,17 +7,18 @@
 
     <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
       <mat-form-field appearance="outline" class="full-width">
-        <mat-label>E-mail</mat-label>
+        <mat-label>Usuário</mat-label>
         <input
           matInput
-          formControlName="email"
-          type="email"
+          formControlName="usuario"
           autocomplete="username"
         />
-        @if (form.controls.email.hasError('required') && form.controls.email.touched) {
-          <mat-error>Informe seu e-mail.</mat-error>
-        } @else if (form.controls.email.hasError('email') && form.controls.email.touched) {
-          <mat-error>Digite um e-mail válido.</mat-error>
+        @if (form.controls.usuario.hasError('required') && form.controls.usuario.touched) {
+          <mat-error>Informe seu usuário.</mat-error>
+        } @else if (form.controls.usuario.hasError('minlength') && form.controls.usuario.touched) {
+          <mat-error>O usuário deve ter pelo menos 8 caracteres.</mat-error>
+        } @else if (form.controls.usuario.hasError('pattern') && form.controls.usuario.touched) {
+          <mat-error>Use somente letras e números.</mat-error>
         }
       </mat-form-field>
 
@@ -27,10 +28,17 @@
           matInput
           formControlName="senha"
           type="password"
+          maxlength="20"
           autocomplete="current-password"
         />
         @if (form.controls.senha.hasError('required') && form.controls.senha.touched) {
           <mat-error>Informe sua senha.</mat-error>
+        } @else if (form.controls.senha.hasError('minlength') && form.controls.senha.touched) {
+          <mat-error>A senha deve ter pelo menos 8 caracteres.</mat-error>
+        } @else if (form.controls.senha.hasError('maxlength') && form.controls.senha.touched) {
+          <mat-error>A senha deve ter no máximo 20 caracteres.</mat-error>
+        } @else if (form.controls.senha.hasError('pattern') && form.controls.senha.touched) {
+          <mat-error>A senha deve conter letras e números.</mat-error>
         }
       </mat-form-field>
 
@@ -47,7 +55,7 @@
         class="submit-button"
         [disabled]="form.invalid || isSubmitting()"
       >
-        {{ isSubmitting() ? 'Entrando...' : 'Entrar' }}
+        {{ isSubmitting() ? 'Acessando...' : 'Acessar' }}
       </button>
     </form>
   </section>

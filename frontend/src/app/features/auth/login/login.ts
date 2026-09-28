@@ -25,8 +25,19 @@ export class Login {
   readonly errorMessage = signal('');
   readonly successMessage = signal('');
   readonly form = this.formBuilder.nonNullable.group({
-    email: ['', [Validators.required, Validators.email]],
-    senha: ['', Validators.required],
+    usuario: [
+      '',
+      [Validators.required, Validators.minLength(8), Validators.pattern(/^[a-zA-Z0-9]+$/)],
+    ],
+    senha: [
+      '',
+      [
+        Validators.required,
+        Validators.minLength(8),
+        Validators.maxLength(20),
+        Validators.pattern(/^(?=.*[A-Za-z])(?=.*[0-9]).+$/),
+      ],
+    ],
   });
 
   submit(): void {
@@ -56,7 +67,7 @@ export class Login {
       error instanceof HttpErrorResponse &&
       (error.status === 401 || error.status === 403)
     ) {
-      return 'E-mail ou senha incorretos. Confira seus dados e tente novamente.';
+      return 'Usuário ou senha incorretos. Confira seus dados e tente novamente.';
     }
 
     if (error instanceof HttpErrorResponse && error.status === 0) {

@@ -9,7 +9,7 @@ erDiagram
 	USUARIO {
 		BIGINT id PK
 		VARCHAR nome
-		VARCHAR email UK
+		VARCHAR usuario UK
 		VARCHAR senha "hash BCrypt"
 		VARCHAR role
 		BOOLEAN ativo
@@ -23,13 +23,13 @@ erDiagram
 | -------------- | ------------ | ---------------------------------------------------------------------------- |
 | `id`           | BIGINT       | Chave primária autoincrementada.                                             |
 | `nome`         | VARCHAR(150) | Obrigatório.                                                                 |
-| `email`        | VARCHAR(150) | Obrigatório e único; usado atualmente no login.                              |
+| `usuario`      | VARCHAR(50)  | Obrigatório e único; identificador usado no login, alfanumérico com mínimo de 8 caracteres. |
 | `senha`        | VARCHAR(255) | Obrigatório; armazenar o hash BCrypt, nunca a senha em texto puro.           |
 | `role`         | VARCHAR(50)  | Perfil, por exemplo `ADMIN`.                                                 |
 | `ativo`        | BOOLEAN      | Obrigatório, com padrão `TRUE`. O login atual ainda não verifica esse valor. |
 | `data_criacao` | TIMESTAMP    | Obrigatório, com padrão `CURRENT_TIMESTAMP`.                                 |
 
-Origem: `backend/src/main/resources/db/migration/V1__init.sql` e `V2__insert_admin.sql`. A migration V2 insere o administrador inicial com senha armazenada como hash; consulte as configurações locais para credenciais, não as registre neste documento.
+Origem: migrations `V1__init.sql`, `V2__insert_admin.sql`, `V3__add_usuario_login.sql` e `V4__remove_email_from_usuario.sql`. A migration V3 atribui identificadores às contas existentes e define `admin1234` para o administrador inicial; a migration V4 remove o e-mail da conta de autenticação. A senha permanece armazenada como hash.
 
 ## Modelo exigido para alunos (a implementar)
 

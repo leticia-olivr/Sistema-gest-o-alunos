@@ -65,10 +65,10 @@ sequenceDiagram
 	participant Service as AuthService Java
 	participant DB as H2
 	participant JWT as JwtService
-	UI->>Auth: login(email, senha)
+	UI->>Auth: login(usuario, senha)
 	Auth->>API: POST /api/auth/login
 	API->>Service: login(LoginRequest)
-	Service->>DB: buscar usuário por e-mail
+	Service->>DB: buscar pelo identificador de usuário
 	Service->>Service: conferir hash com BCrypt
 	Service->>JWT: gerar token
 	JWT-->>Service: JWT assinado (expira em 1 hora)
@@ -78,7 +78,7 @@ sequenceDiagram
 	Auth-->>UI: resposta observável
 ```
 
-O contrato atual envia `email` e `senha`; o protótipo oficial descreve `usuario` e `senha`. Essa diferença precisa ser resolvida conforme [`regras-negocio.md`](regras-negocio.md), antes de declarar o login conforme ao desafio.
+O contrato atual envia `usuario` e `senha`. A conta de autenticação não armazena e-mail. O frontend e o backend validam o identificador alfanumérico (mínimo 8 caracteres) e a senha (8 a 20 caracteres, com letras e números).
 
 ## API e segurança atuais
 
@@ -86,7 +86,7 @@ O contrato atual envia `email` e `senha`; o protótipo oficial descreve `usuario
 - `/swagger-ui/**`, `/v3/api-docs/**` e `/h2-console/**`: públicos no `SecurityConfig` atual.
 - Outras rotas: Spring Security exige autenticação.
 - `JwtAuthenticationFilter` procura `Authorization: Bearer <token>`.
-- Senhas são comparadas com BCrypt. O JWT inclui e-mail no `subject`, claim `role` e validade de uma hora.
+- Senhas são comparadas com BCrypt. O JWT inclui o identificador de usuário no `subject`, claim `role` e validade de uma hora.
 - O JWT fica em `localStorage` sob a chave `siga_auth_token`.
 
 Limitações conhecidas: segredo JWT fixo no código; não há interceptor Angular, AuthGuard, logout ou autorização efetiva por role; usuário inativo não é recusado no login; exceções do login não têm mapeamento HTTP centralizado; CORS não está configurado no backend. Detalhes em [`autenticacao-login.md`](autenticacao-login.md).

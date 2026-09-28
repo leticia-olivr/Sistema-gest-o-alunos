@@ -19,8 +19,8 @@ Este arquivo é o resumo curto para orientar ferramentas e pessoas que trabalham
 
 ## Discrepâncias e prioridades conhecidas
 
-- Protótipo pede login por usuário alfanumérico (mínimo 8); contrato atual usa e-mail.
-- Protótipo exige senha de 8–20 caracteres contendo letras e números; formulário atual só exige preenchimento.
+- Login valida identificador alfanumérico (mínimo 8) e senha (8 a 20 caracteres, letras e números) no frontend e servidor; conta de autenticação não armazena e-mail.
+- Protótipo exige senha de 8 a 20 caracteres contendo letras e números; formulário e API aplicam essa regra.
 - Faltam logout, AuthGuard Angular, interceptor Bearer, autorização efetiva por perfil e respostas de erro HTTP padronizadas.
 - Entidade/tabela e endpoints de alunos ainda não existem.
 

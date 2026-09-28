@@ -24,7 +24,7 @@ public class JwtService {
     public String generateToken(Usuario usuario) {
 
         return Jwts.builder()
-                .subject(usuario.getEmail())
+                .subject(usuario.getUsuario())
                 .claim("role", usuario.getRole())
                 .issuedAt(new Date())
                 .expiration(
@@ -36,7 +36,7 @@ public class JwtService {
                 .compact();
     }
 
-    public String extractUsername(String token) {
+        public String extractUsuario(String token) {
 
         return Jwts.parser()
                 .verifyWith(getSignInKey())
@@ -64,9 +64,9 @@ public class JwtService {
             Usuario usuario
     ) {
 
-        String email = extractUsername(token);
+        String usuarioLogin = extractUsuario(token);
 
-        return email.equals(usuario.getEmail())
+        return usuarioLogin.equals(usuario.getUsuario())
                 && !isTokenExpired(token);
     }
 }

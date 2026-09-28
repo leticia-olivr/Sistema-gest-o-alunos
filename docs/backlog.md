@@ -6,11 +6,11 @@ Este backlog acompanha as diferenças entre o código existente e o Protótipo 2
 
 ### Concluído no código atual
 
-- [x] Implementar `POST /api/auth/login` com busca do usuário por e-mail, comparação de senha usando BCrypt e resposta contendo JWT.
+- [x] Implementar `POST /api/auth/login` com busca do usuário pelo identificador, comparação de senha usando BCrypt e resposta contendo JWT.
 - [x] Gerar JWT assinado com `subject`, claim `role` e expiração de uma hora.
 - [x] Integrar o formulário Angular standalone/Reactive Forms ao endpoint de login.
 - [x] Guardar o token retornado no `localStorage` com a chave `siga_auth_token` e disponibilizar leitura pelo `AuthService`.
-- [x] Validar e-mail obrigatório/formato e senha obrigatória no frontend; bloquear envio com formulário inválido.
+- [x] Validar os campos do login no frontend e bloquear envio com formulário inválido.
 - [x] Durante o envio, indicar processamento e impedir cliques duplicados.
 - [x] Exibir mensagem genérica no frontend para respostas HTTP `401`/`403` e mensagem de falha de conexão para status `0`.
 - [x] Configurar o Spring Security para permitir `/api/auth/**` e exigir autenticação nas demais rotas; incluir o filtro JWT na cadeia de segurança.
@@ -20,9 +20,9 @@ Esses itens descrevem o que existe hoje. Eles não significam conformidade compl
 
 ### Ainda pendente
 
-- [ ] Definir o identificador de login conforme o protótipo: usuário alfanumérico com pelo menos 8 caracteres. Atualizar modelo, migration/seed, DTO e API; manter e-mail como dado distinto se necessário.
-- [ ] Validar senha de 8 a 20 caracteres com letras e números no frontend e no backend.
-- [ ] Implementar validação server-side (`@Valid` e constraints) para o identificador e a senha.
+- [x] Definir o identificador de login conforme o protótipo: usuário alfanumérico com pelo menos 8 caracteres. Atualizar modelo, migration/seed e API; remover e-mail da conta de autenticação.
+- [x] Validar senha de 8 a 20 caracteres com letras e números no frontend e no backend.
+- [x] Implementar validação server-side (`@Valid` e constraints) para o identificador e a senha.
 - [ ] Padronizar exceções de autenticação com mensagem genérica e status HTTP estável `401`; o frontend já apresenta mensagem genérica para `401`/`403`.
 - [ ] Recusar login de usuário inativo.
 - [ ] Tratar JWT malformado/expirado como não autenticado (`401`) sem erro inesperado.
@@ -62,6 +62,6 @@ Esses itens descrevem o que existe hoje. Eles não significam conformidade compl
 
 ## Decisões necessárias
 
-- Confirmar a representação do usuário de login (campo separado de e-mail) e a forma de migração da conta inicial.
+- A forma de migração da conta inicial foi definida nas migrations V3 e V4.
 - Definir onde armazenar fotos (banco, filesystem ou object storage) e limite de retenção.
 - Definir se JWT continuará sendo a sessão ou se será adotado cookie seguro; qualquer alternativa deve abranger backend e frontend.
