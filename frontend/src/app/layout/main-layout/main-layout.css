@@ -1,0 +1,34 @@
+.authenticated-shell {
+  min-height: 100vh;
+}
+
+.app-header {
+  align-items: center;
+  border-bottom: 1px solid #d9dee5;
+  display: flex;
+  justify-content: space-between;
+  min-height: 64px;
+  padding: 0 24px;
+}
+
+.app-brand {
+  color: inherit;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.app-content {
+  margin: 0 auto;
+  max-width: 1120px;
+  padding: 32px 24px;
+}
+
+@media (max-width: 600px) {
+  .app-header {
+    padding: 0 16px;
+  }
+
+  .app-content {
+    padding: 24px 16px;
+  }
+}

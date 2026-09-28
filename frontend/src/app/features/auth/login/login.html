@@ -45,8 +45,8 @@
       @if (errorMessage()) {
         <p class="error-message" role="alert">{{ errorMessage() }}</p>
       }
-      @if (successMessage()) {
-        <p class="success-message" role="status">{{ successMessage() }}</p>
+      @if (sessionMessage()) {
+        <p class="error-message" role="status">{{ sessionMessage() }}</p>
       }
 
       <button

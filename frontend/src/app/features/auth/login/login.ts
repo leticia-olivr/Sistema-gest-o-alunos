@@ -1,6 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -20,10 +21,16 @@ import { AuthService } from '../../../core/services/auth.service';
 export class Login {
   private readonly formBuilder = inject(FormBuilder);
   private readonly authService = inject(AuthService);
+  private readonly activatedRoute = inject(ActivatedRoute);
+  private readonly router = inject(Router);
 
   readonly isSubmitting = signal(false);
   readonly errorMessage = signal('');
-  readonly successMessage = signal('');
+  readonly sessionMessage = signal(
+    this.activatedRoute.snapshot.queryParamMap.get('sessionExpired') === 'true'
+      ? 'Sua sessão terminou. Entre novamente para continuar.'
+      : '',
+  );
   readonly form = this.formBuilder.nonNullable.group({
     usuario: [
       '',
@@ -48,18 +55,24 @@ export class Login {
 
     this.isSubmitting.set(true);
     this.errorMessage.set('');
-    this.successMessage.set('');
+    this.sessionMessage.set('');
 
     this.authService.login(this.form.getRawValue()).subscribe({
       next: () => {
         this.isSubmitting.set(false);
-        this.successMessage.set('Login realizado. Seu acesso foi confirmado.');
+        const returnUrl = this.activatedRoute.snapshot.queryParamMap.get('returnUrl');
+        const destination = this.isSafeReturnUrl(returnUrl) ? returnUrl : '/inicio';
+        void this.router.navigateByUrl(destination);
       },
       error: (error: unknown) => {
         this.isSubmitting.set(false);
         this.errorMessage.set(this.getErrorMessage(error));
       },
     });
+  }
+
+  private isSafeReturnUrl(url: string | null): url is string {
+    return Boolean(url?.startsWith('/') && !url.startsWith('//') && url !== '/login');
   }
 
   private getErrorMessage(error: unknown): string {
