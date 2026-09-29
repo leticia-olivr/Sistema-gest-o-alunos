@@ -53,13 +53,14 @@ frontend/src/app/
 └── features/
 	├── auth/login/ # componente, template e estilos de login
 	└── alunos/
+	    ├── aluno-list/ # listagem paginada, busca e filtro de status
 	    ├── aluno-form/ # formulário standalone de cadastro e edição
 	    ├── models/     # modelo de aluno
 	    ├── services/   # integração HTTP com a API de alunos
 	    └── validators/ # validações de nome, e-mail, CPF, telefone e foto
 ```
 
-O backend de alunos já permite cadastro, consulta paginada, detalhe, edição e inativação. As telas de alunos ainda não foram implementadas; turmas permanecem fora do escopo obrigatório.
+O backend de alunos permite cadastro, consulta paginada, detalhe, edição e inativação. O frontend já possui listagem paginada em `/alunos` e formulário de cadastro/edição; telas de detalhes e ações de edição/inativação a partir da lista ainda estão pendentes. Turmas permanecem fora do escopo obrigatório.
 
 ## Fluxo de autenticação atual
 

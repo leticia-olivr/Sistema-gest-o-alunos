@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
-import { Aluno } from '../models/aluno.model';
+import { Aluno, AlunoPage, AlunoStatusFilter } from '../models/aluno.model';
 
 @Injectable({ providedIn: 'root' })
 export class AlunoApiService {
@@ -10,6 +10,15 @@ export class AlunoApiService {
 
   buscarPorId(id: number): Observable<Aluno> {
     return this.http.get<Aluno>(`${this.endpoint}/${id}`);
+  }
+
+  listar(params: {
+    busca: string;
+    status: AlunoStatusFilter;
+    page: number;
+    size: number;
+  }): Observable<AlunoPage> {
+    return this.http.get<AlunoPage>(this.endpoint, { params });
   }
 
   criar(dados: FormData): Observable<Aluno> {

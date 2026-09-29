@@ -1,0 +1,178 @@
+:host {
+  display: block;
+}
+
+.student-list-page {
+  margin: 0 auto;
+  max-width: 1120px;
+}
+
+.page-heading {
+  align-items: center;
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  padding-bottom: 20px;
+}
+
+.page-heading h1 {
+  font-size: 28px;
+  font-weight: 500;
+  margin: 0;
+}
+
+.eyebrow {
+  color: var(--mat-sys-primary);
+  font-size: 13px;
+  margin: 0 0 6px;
+}
+
+.list-controls {
+  align-items: start;
+  display: grid;
+  gap: 16px;
+  grid-template-columns: minmax(240px, 1fr) 180px;
+}
+
+.search-field,
+.status-field {
+  width: 100%;
+}
+
+.table-scroll {
+  overflow-x: auto;
+}
+
+table {
+  border-collapse: collapse;
+  min-width: 720px;
+  width: 100%;
+}
+
+th,
+td {
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+  padding: 14px 12px;
+  text-align: left;
+}
+
+th {
+  color: var(--mat-sys-on-surface-variant);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+td {
+  font-size: 14px;
+}
+
+.student-name {
+  font-weight: 500;
+}
+
+.status-label {
+  align-items: center;
+  color: #176b42;
+  display: inline-flex;
+  gap: 7px;
+  white-space: nowrap;
+}
+
+.status-label.inactive {
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.status-dot {
+  background: #218653;
+  border-radius: 50%;
+  height: 8px;
+  width: 8px;
+}
+
+.status-label.inactive .status-dot {
+  background: #7c8582;
+}
+
+.loading-state,
+.feedback-state {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  justify-content: center;
+  min-height: 260px;
+  text-align: center;
+}
+
+.feedback-state h2,
+.feedback-state p {
+  margin: 0;
+}
+
+.feedback-state h2 {
+  font-size: 19px;
+  font-weight: 500;
+}
+
+.feedback-state p {
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.pagination {
+  align-items: center;
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+  display: flex;
+  justify-content: space-between;
+  padding: 16px 12px;
+}
+
+.pagination p {
+  color: var(--mat-sys-on-surface-variant);
+  font-size: 14px;
+  margin: 0;
+}
+
+.page-controls {
+  align-items: center;
+  display: flex;
+  gap: 12px;
+}
+
+.page-controls span {
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.visually-hidden {
+  clip: rect(0, 0, 0, 0);
+  clip-path: inset(50%);
+  height: 1px;
+  overflow: hidden;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+}
+
+@media (max-width: 640px) {
+  .page-heading h1 {
+    font-size: 24px;
+  }
+
+  .list-controls {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+
+  .pagination {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .page-controls {
+    gap: 8px;
+    justify-content: space-between;
+    width: 100%;
+  }
+}

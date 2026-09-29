@@ -103,7 +103,9 @@ O Protótipo 2.0 não apresenta RN-014; a numeração foi preservada conforme o 
 - RN-045: sucesso atualiza lista e total e exibe feedback.
 - RN-046: ao inativar o último item da página, navegar para a página válida anterior.
 - RN-047: modal prende foco, responde a Escape e devolve o foco ao acionador.
-- Extensões opcionais: registrar data/responsável, restaurar por Administrador e remover fisicamente só sem dependências e com justificativa.
+- Um aluno inativo pode ser reativado; somente o perfil Administrador pode alterar seu status. A reativação preserva o histórico e faz o aluno voltar aos resultados de ativos.
+- Nesta versão, inativar não exige motivo nem registra responsável ou data; o aluno é mantido com status inativo.
+- Extensões opcionais: registrar data/responsável e remover fisicamente só sem dependências e com justificativa.
 
 ## 7. Estados e respostas da API
 

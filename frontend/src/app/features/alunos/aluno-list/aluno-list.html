@@ -1,0 +1,103 @@
+<section class="student-list-page" aria-labelledby="student-list-title">
+  <header class="page-heading">
+    <div>
+      <p class="eyebrow">Gestão de alunos</p>
+      <h1 id="student-list-title">Alunos</h1>
+    </div>
+    @if (isAdmin) {
+      <a mat-flat-button routerLink="/alunos/novo">Cadastrar aluno</a>
+    }
+  </header>
+
+  <div class="list-controls">
+    <mat-form-field appearance="outline" class="search-field">
+      <mat-label>Buscar por nome ou matrícula</mat-label>
+      <input matInput [formControl]="busca" autocomplete="off" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="status-field">
+      <mat-label>Status</mat-label>
+      <mat-select [value]="status()" (selectionChange)="alterarStatus($event.value)">
+        <mat-option value="ATIVOS">Ativos</mat-option>
+        <mat-option value="INATIVOS">Inativos</mat-option>
+        <mat-option value="TODOS">Todos</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  @if (carregando()) {
+    <div class="loading-state" role="status" aria-label="Carregando alunos">
+      <mat-spinner diameter="32" />
+      <span>Carregando alunos...</span>
+    </div>
+  } @else if (erro()) {
+    <div class="feedback-state" role="alert">
+      <p>{{ erro() }}</p>
+      <button mat-stroked-button type="button" (click)="tentarNovamente()">Tentar novamente</button>
+    </div>
+  } @else if (alunos().length === 0) {
+    <div class="feedback-state" role="status">
+      <h2>Nenhum aluno encontrado</h2>
+      <p>Altere a busca ou o filtro de status.</p>
+      @if (busca.value || status() !== 'ATIVOS') {
+        <button mat-button type="button" (click)="limparBusca()">Limpar busca</button>
+      }
+    </div>
+  } @else {
+    <div class="table-scroll">
+      <table>
+        <caption class="visually-hidden">Alunos ordenados por nome crescente</caption>
+        <thead>
+          <tr>
+            <th scope="col">Nome</th>
+            <th scope="col">Matrícula</th>
+            <th scope="col">E-mail</th>
+            <th scope="col">Telefone</th>
+            <th scope="col">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (aluno of alunos(); track aluno.id) {
+            <tr>
+              <td class="student-name">{{ aluno.nome }}</td>
+              <td>{{ aluno.matricula }}</td>
+              <td>{{ aluno.email }}</td>
+              <td>{{ aluno.telefone }}</td>
+              <td>
+                <span class="status-label" [class.inactive]="!aluno.ativo">
+                  <span class="status-dot" aria-hidden="true"></span>
+                  {{ aluno.ativo ? 'Ativo' : 'Inativo' }}
+                </span>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <footer class="pagination" aria-label="Paginação de alunos">
+      <p>{{ primeiroResultado() }}–{{ ultimoResultado() }} de {{ total() }} alunos</p>
+      <div class="page-controls">
+        <button
+          mat-stroked-button
+          type="button"
+          aria-label="Página anterior"
+          [disabled]="pagina() === 0"
+          (click)="irParaPagina(pagina() - 1)"
+        >
+          Anterior
+        </button>
+        <span aria-live="polite">Página {{ pagina() + 1 }} de {{ totalPaginas() }}</span>
+        <button
+          mat-stroked-button
+          type="button"
+          aria-label="Próxima página"
+          [disabled]="pagina() + 1 >= totalPaginas()"
+          (click)="irParaPagina(pagina() + 1)"
+        >
+          Próxima
+        </button>
+      </div>
+    </footer>
+  }
+</section>

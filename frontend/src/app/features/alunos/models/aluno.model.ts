@@ -9,3 +9,13 @@ export interface Aluno {
   dataCriacao: string;
   fotoUrl: string | null;
 }
+
+export interface AlunoPage {
+  content: Aluno[];
+  page: number;
+  size: number;
+  totalElements: number;
+  totalPages: number;
+}
+
+export type AlunoStatusFilter = 'ATIVOS' | 'INATIVOS' | 'TODOS';

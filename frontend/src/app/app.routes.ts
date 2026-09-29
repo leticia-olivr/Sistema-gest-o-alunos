@@ -31,6 +31,11 @@ export const routes: Routes = [
 					import('./features/alunos/aluno-form/aluno-form').then((module) => module.AlunoForm),
 			},
 			{
+				path: 'alunos',
+				loadComponent: () =>
+					import('./features/alunos/aluno-list/aluno-list').then((module) => module.AlunoList),
+			},
+			{
 				path: 'alunos/:id/editar',
 				canActivate: [adminGuard],
 				loadComponent: () =>
