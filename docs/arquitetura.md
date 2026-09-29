@@ -37,23 +37,29 @@ O proxy existe apenas no servidor de desenvolvimento. Em produção, configurar 
 ```text
 backend/src/main/java/com/leticia/gestaoalunos/
 ├── config/       # Spring Security e configuração
-├── controller/  # AuthController e controller de teste
-├── dto/          # LoginRequest e LoginResponse
-├── entity/       # Usuario
-├── repository/   # UsuarioRepository
+├── controller/  # AuthController, AlunoController e controller de teste
+├── dto/          # Requisições e respostas de autenticação e alunos
+├── entity/       # Usuario e Aluno
+├── repository/   # UsuarioRepository e AlunoRepository
 ├── security/     # JwtService e JwtAuthenticationFilter
-├── service/      # AuthService
+├── service/      # AuthService e AlunoService
 └── util/         # utilitários
 
 frontend/src/app/
 ├── core/
 │   ├── models/   # modelos de autenticação
-│   └── services/ # AuthService
+│   ├── services/ # AuthService e AuthSessionService
+│   └── guards/   # guards de autenticação e ADMIN
 └── features/
-	└── auth/login/ # componente, template e estilos de login
+	├── auth/login/ # componente, template e estilos de login
+	└── alunos/
+	    ├── aluno-form/ # formulário standalone de cadastro e edição
+	    ├── models/     # modelo de aluno
+	    ├── services/   # integração HTTP com a API de alunos
+	    └── validators/ # validações de nome, e-mail, CPF, telefone e foto
 ```
 
-As pastas de alunos, turmas, layout e guards estão previstas na arquitetura, mas ainda não contêm funcionalidades de negócio implementadas.
+O backend de alunos já permite cadastro, consulta paginada, detalhe, edição e inativação. As telas de alunos ainda não foram implementadas; turmas permanecem fora do escopo obrigatório.
 
 ## Fluxo de autenticação atual
 
@@ -83,17 +89,23 @@ O contrato atual envia `usuario` e `senha`. A conta de autenticação não armaz
 ## API e segurança atuais
 
 - `POST /api/auth/login`: público; valida credenciais e retorna JWT.
+- `POST /api/alunos`: multipart; ADMIN; cria aluno e retorna `201` com matrícula gerada.
+- `GET /api/alunos`: ADMIN/LEITOR; aceita `busca`, `status` (`ATIVOS`, `INATIVOS`, `TODOS`), `page` e `size` (padrão 0/10); busca nome parcial ou prefixo da matrícula.
+- `GET /api/alunos/{id}` e `GET /api/alunos/{id}/foto`: ADMIN/LEITOR; consulta dados e foto.
+- `PUT /api/alunos/{id}`: multipart; ADMIN; atualiza nome, e-mail, telefone, status e foto; CPF e matrícula não são editáveis.
+- `PATCH /api/alunos/{id}/inativar`: ADMIN; inativa sem apagar o histórico.
+- Fotos: JPEG/PNG, no máximo 5 MB; a listagem retorna `fotoUrl` e não carrega os bytes da imagem na página.
 - `/swagger-ui/**`, `/v3/api-docs/**` e `/h2-console/**`: públicos no `SecurityConfig` atual.
 - Outras rotas: Spring Security exige autenticação.
 - `JwtAuthenticationFilter` procura `Authorization: Bearer <token>`.
 - Senhas são comparadas com BCrypt. O JWT inclui o identificador de usuário no `subject`, claim `role` e validade de uma hora.
 - O JWT fica em `localStorage` sob a chave `siga_auth_token`.
 
-Limitações conhecidas: a área `/inicio` é apenas a entrada protegida e a API de alunos ainda não existe; CORS não está configurado no backend. Logout, guard, interceptor e matriz de perfis estão implementados. O segredo JWT é configurado pela variável de ambiente `JWT_SECRET`. Detalhes em [`autenticacao-login.md`](autenticacao-login.md).
+Limitações conhecidas: a área `/inicio` é apenas a entrada protegida, a interface de alunos ainda não existe e CORS não está configurado no backend. Logout, guard, interceptor e matriz de perfis estão implementados. O segredo JWT é configurado pela variável de ambiente `JWT_SECRET`. Detalhes em [`autenticacao-login.md`](autenticacao-login.md).
 
 ## Persistência
 
-O `application.properties` usa `jdbc:h2:mem:alunosdb`, portanto o banco é volátil. Flyway cria atualmente apenas `usuario` e insere um administrador inicial. Não existe ainda entidade ou tabela de alunos/turmas. O estado atual e o modelo futuro esperado estão separados em [`diagrama-banco.md`](diagrama-banco.md).
+O `application.properties` usa `jdbc:h2:mem:alunosdb`, portanto o banco é volátil. Flyway cria `usuario` e `aluno` e insere um administrador inicial. O perfil local `dev` é o padrão e carrega 25 alunos de demonstração por um inicializador idempotente; ativar o perfil `prod` desabilita essa carga. Não há tabela de turmas no escopo atual. O modelo está em [`diagrama-banco.md`](diagrama-banco.md).
 
 ## Comandos principais
 

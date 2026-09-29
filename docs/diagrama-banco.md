@@ -2,7 +2,7 @@
 
 ## Modelo implementado
 
-As migrations atuais criam apenas a tabela `usuario`. O banco configurado é H2 em memória (`jdbc:h2:mem:alunosdb`); os dados são recriados ao reiniciar a aplicação.
+As migrations atuais criam as tabelas `usuario` e `aluno`. O banco configurado é H2 em memória (`jdbc:h2:mem:alunosdb`); os dados são recriados ao reiniciar a aplicação.
 
 ```mermaid
 erDiagram
@@ -31,9 +31,42 @@ erDiagram
 
 Origem: migrations `V1__init.sql`, `V2__insert_admin.sql`, `V3__add_usuario_login.sql`, `V4__remove_email_from_usuario.sql` e `V5__set_admin_dev_password.sql`. A migration V3 atribui identificadores às contas existentes e define `admin1234` para o administrador inicial; V4 remove o e-mail da conta de autenticação; V5 atualiza o hash para uma senha de desenvolvimento que atende às regras atuais. Não use a credencial seedada em produção.
 
-## Modelo exigido para alunos (a implementar)
+## Modelo do aluno
 
-O Protótipo 2.0 exige cadastro de alunos, mas ainda não existe entidade, migration ou tabela `aluno` no código. O requisito funcional inclui os seguintes dados; tipos, nomes físicos e relacionamentos devem ser definidos na migration antes da implementação:
+```mermaid
+erDiagram
+	ALUNO {
+		BIGINT id PK
+		VARCHAR matricula UK
+		VARCHAR nome
+		VARCHAR email UK
+		VARCHAR cpf UK
+		VARCHAR telefone
+		BLOB foto
+		VARCHAR foto_mime_type
+		BOOLEAN ativo
+		TIMESTAMP data_criacao
+	}
+```
+
+O schema de `aluno` foi criado pela migration `V6__create_aluno_table.sql`. Matrícula, CPF e e-mail são únicos em todos os registros; `ativo` indica se o aluno está ativo, mantendo os inativos consultáveis.
+
+| Coluna           | Tipo         | Restrição/uso |
+| ---------------- | ------------ | ------------- |
+| `id`             | BIGINT       | Chave primária autoincrementada. |
+| `matricula`      | VARCHAR(20)  | Obrigatória e única; será gerada pelo backend. |
+| `nome`           | VARCHAR(120) | Obrigatório; API validará 3–120 caracteres. |
+| `email`          | VARCHAR(150) | Obrigatório e único. |
+| `cpf`            | VARCHAR(11)  | Obrigatório, único e armazenado sem máscara. |
+| `telefone`       | VARCHAR(11)  | Obrigatório; API validará e persistirá somente dígitos. |
+| `foto`           | BLOB         | Opcional; bytes da imagem armazenados no banco. |
+| `foto_mime_type` | VARCHAR(50)  | Opcional; obrigatório quando `foto` estiver presente. |
+| `ativo`          | BOOLEAN      | Obrigatório, padrão `TRUE`; inativação preserva o registro. |
+| `data_criacao`   | TIMESTAMP    | Obrigatório, padrão `CURRENT_TIMESTAMP`. |
+
+Foto em BLOB foi escolhida para a primeira versão, sem infraestrutura externa; a API deverá limitar o tamanho a 5 MB e aceitar JPEG/PNG. Em escala maior, avaliar armazenamento externo.
+
+O requisito funcional inclui os seguintes dados:
 
 | Dado            | Regra funcional                                                           |
 | --------------- | ------------------------------------------------------------------------- |
@@ -41,7 +74,7 @@ O Protótipo 2.0 exige cadastro de alunos, mas ainda não existe entidade, migra
 | E-mail          | Obrigatório, válido e único entre registros vigentes.                     |
 | CPF             | Obrigatório, validar dígitos e unicidade sem máscara.                     |
 | Telefone        | Persistir somente dígitos após validar DDD e número.                      |
-| Foto            | Opcional, JPEG/PNG, até 5 MB. Decidir estratégia de armazenamento.        |
+| Foto            | Opcional, JPEG/PNG, até 5 MB; armazenamento atual em BLOB.                |
 | Matrícula       | Gerada pelo backend, única e imutável.                                    |
 | Status          | Ativo inicialmente; permitir inativação.                                  |
 | Exclusão lógica | Indicador para manter histórico e ocultar registros excluídos dos ativos. |
@@ -52,6 +85,6 @@ Não há relacionamento aluno-turma especificado nesta fase obrigatória; turmas
 
 - Criar migrations Flyway novas; não editar migrations já aplicadas em ambientes compartilhados.
 - Usar tabelas minúsculas e colunas `snake_case`, conforme convenções do projeto.
-- Definir índices/constraints para matrícula, CPF e e-mail únicos; a regra de unicidade de e-mail deve considerar registros vigentes.
+- Matrícula, CPF e e-mail têm constraints únicas na tabela `aluno`.
 - Implementar constraints no banco além das validações da API quando aplicável.
 - Atualizar este diagrama quando migrations reais forem adicionadas; manter separado o esquema existente do modelo planejado.

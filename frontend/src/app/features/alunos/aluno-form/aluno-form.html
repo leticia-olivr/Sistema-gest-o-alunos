@@ -1,0 +1,104 @@
+<section class="student-form-page" aria-labelledby="student-form-title">
+  <header class="page-heading">
+    <div>
+      <p class="eyebrow">Cadastro de alunos</p>
+      <h1 id="student-form-title">{{ editando ? 'Editar aluno' : 'Novo aluno' }}</h1>
+    </div>
+    <button mat-button type="button" (click)="voltar()">Voltar</button>
+  </header>
+
+  @if (carregando()) {
+    <p role="status">Carregando dados do aluno...</p>
+  } @else {
+    @if (aluno(); as registro) {
+      <section class="identity-fields" aria-label="Dados não editáveis">
+        <mat-form-field appearance="outline">
+          <mat-label>Matrícula</mat-label>
+          <input matInput [value]="registro.matricula" readonly />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>CPF</mat-label>
+          <input matInput [value]="registro.cpf" readonly />
+        </mat-form-field>
+      </section>
+    }
+
+    <form [formGroup]="form" (ngSubmit)="salvar()" novalidate>
+      <div class="form-grid">
+        <mat-form-field appearance="outline" class="wide-field">
+          <mat-label>Nome completo</mat-label>
+          <input matInput formControlName="nome" autocomplete="name" maxlength="120" />
+          @if (erroDoCampo('nome')) {
+            <mat-error>{{ erroDoCampo('nome') }}</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="wide-field">
+          <mat-label>E-mail</mat-label>
+          <input matInput formControlName="email" type="email" autocomplete="email" maxlength="150" />
+          @if (erroDoCampo('email')) {
+            <mat-error>{{ erroDoCampo('email') }}</mat-error>
+          }
+        </mat-form-field>
+
+        @if (!editando) {
+          <mat-form-field appearance="outline">
+            <mat-label>CPF</mat-label>
+            <input matInput formControlName="cpf" inputmode="numeric" autocomplete="off" />
+            @if (erroDoCampo('cpf')) {
+              <mat-error>{{ erroDoCampo('cpf') }}</mat-error>
+            }
+          </mat-form-field>
+        }
+
+        <mat-form-field appearance="outline">
+          <mat-label>Telefone com DDD</mat-label>
+          <input matInput formControlName="telefone" type="tel" autocomplete="tel" />
+          @if (erroDoCampo('telefone')) {
+            <mat-error>{{ erroDoCampo('telefone') }}</mat-error>
+          }
+        </mat-form-field>
+      </div>
+
+      <div class="photo-field">
+        <label for="student-photo">Foto (opcional)</label>
+        <input
+          id="student-photo"
+          type="file"
+          accept="image/jpeg,image/png"
+          (change)="selecionarFoto($event)"
+          aria-describedby="photo-hint photo-error"
+        />
+        <p id="photo-hint">JPEG ou PNG, até 5 MB.</p>
+        @if (erroDoCampo('foto')) {
+          <p id="photo-error" class="field-error" role="alert">{{ erroDoCampo('foto') }}</p>
+        }
+        @if (aluno()?.fotoUrl) {
+          <button mat-button type="button" (click)="marcarRemocaoFoto()">Remover foto atual</button>
+        }
+        @if (removerFoto()) {
+          <p role="status">A foto será removida ao salvar.</p>
+        }
+      </div>
+
+      @if (editando) {
+        <mat-checkbox formControlName="ativo">Aluno ativo</mat-checkbox>
+      }
+
+      @if (erro()) {
+        <p class="form-message error-message" role="alert">{{ erro() }}</p>
+      }
+      @if (sucesso()) {
+        <p class="form-message success-message" role="status">{{ sucesso() }}</p>
+      }
+
+      <footer class="form-actions">
+        <button mat-button type="button" (click)="voltar()">Cancelar</button>
+        <button mat-flat-button type="submit" [disabled]="form.invalid || enviando()">
+          {{ enviando() ? 'Salvando...' : 'Salvar aluno' }}
+        </button>
+      </footer>
+    </form>
+  }
+
+</section>

@@ -6,6 +6,7 @@ Monorepo de um sistema para consulta e manutenção de cadastro de alunos. O **P
 
 - Backend Spring Boot com autenticação JWT, usuário inicial via Flyway, H2 e Swagger.
 - Frontend Angular standalone com login por usuário, proteção de rota, logout local e interceptor Bearer.
+- O perfil local `dev` (padrão) carrega 25 alunos de demonstração; configure `SPRING_PROFILES_ACTIVE=prod` para não executar essa carga.
 - Backend valida as credenciais, emite JWT, responde `401` para sessão inválida e aplica regras de perfil nos caminhos previstos da API.
 - A área de alunos e seus endpoints ainda não foram implementados; acompanhe o progresso em [`docs/backlog.md`](docs/backlog.md).
 - Conta inicial local: usuário `admin1234`, senha `Senha123`. Credencial somente para desenvolvimento; troque-a antes de usar qualquer ambiente compartilhado ou produção.

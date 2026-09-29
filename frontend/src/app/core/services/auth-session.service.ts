@@ -24,6 +24,28 @@ export class AuthSessionService {
     return this.getValidToken() !== null;
   }
 
+  getRole(): string | null {
+    const token = this.getValidToken();
+    if (!token) {
+      return null;
+    }
+
+    try {
+      const payloadSegment = token.split('.')[1];
+      if (!payloadSegment) {
+        return null;
+      }
+      const base64 = payloadSegment
+        .replace(/-/g, '+')
+        .replace(/_/g, '/')
+        .padEnd(Math.ceil(payloadSegment.length / 4) * 4, '=');
+      const payload = JSON.parse(atob(base64)) as { role?: unknown };
+      return typeof payload.role === 'string' ? payload.role : null;
+    } catch {
+      return null;
+    }
+  }
+
   saveToken(token: string): void {
     localStorage.setItem(this.tokenStorageKey, token);
   }
