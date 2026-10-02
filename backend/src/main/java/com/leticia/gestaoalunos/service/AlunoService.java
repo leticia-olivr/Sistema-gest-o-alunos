@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.time.Year;
 import java.util.Locale;
 import java.util.Set;
-import java.util.UUID;
 
 @Service
 public class AlunoService {
@@ -265,8 +264,14 @@ public class AlunoService {
     }
 
     private String gerarMatricula() {
-        String sufixo = UUID.randomUUID().toString().replace("-", "").substring(0, 16);
-        return "A" + String.format("%02d", Year.now().getValue() % 100) + sufixo.toUpperCase(Locale.ROOT);
+        int ano = Year.now().getValue();
+        for (int sequencial = 1; sequencial <= 9999; sequencial++) {
+            String matricula = String.format(Locale.ROOT, "%04d%04d", ano, sequencial);
+            if (!alunoRepository.existsByMatricula(matricula)) {
+                return matricula;
+            }
+        }
+        throw conflito("Não há matrículas disponíveis para o ano atual.");
     }
 
     private AlunoApiException conflito(String mensagem) {

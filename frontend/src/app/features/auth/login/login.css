@@ -11,21 +11,26 @@
 
 .login-panel {
   width: min(100%, 420px);
-  padding: 32px;
+  padding: 28px;
   border: 1px solid var(--mat-sys-outline-variant);
-  border-radius: 8px;
+  border-radius: var(--app-control-radius);
   background: var(--mat-sys-surface);
 }
 
 .login-header {
-  margin-bottom: 34px;
+  margin-bottom: 28px;
   text-align: center;
 }
 
 .login-header h1 {
   margin: 0 0 8px;
-  font-size: 24px;
-  font-weight: 500;
+  font-size: var(--app-heading-size);
+  font-weight: 600;
+}
+
+.login-header p {
+  color: var(--mat-sys-on-surface-variant);
+  margin: 0;
 }
 
 .full-width {
@@ -43,15 +48,16 @@
   margin: 0 0 16px;
 }
 
-.error-message,
-.login-header p {
-  color: var(--mat-sys-on-surface-variant);
-}
-
 .error-message {
   color: var(--mat-sys-error);
 }
 
 .success-message {
   color: var(--mat-sys-primary);
+}
+
+@media (max-width: 480px) {
+  .login-panel {
+    padding: 24px 20px;
+  }
 }

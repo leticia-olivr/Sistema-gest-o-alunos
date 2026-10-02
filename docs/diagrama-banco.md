@@ -54,7 +54,7 @@ O schema de `aluno` foi criado pela migration `V6__create_aluno_table.sql`. Matr
 | Coluna           | Tipo         | Restrição/uso |
 | ---------------- | ------------ | ------------- |
 | `id`             | BIGINT       | Chave primária autoincrementada. |
-| `matricula`      | VARCHAR(20)  | Obrigatória e única; será gerada pelo backend. |
+| `matricula`      | VARCHAR(20)  | Obrigatória e única; 8 dígitos numéricos no formato `AAAA####` (ano + sequência anual), gerada pelo backend. |
 | `nome`           | VARCHAR(120) | Obrigatório; API validará 3–120 caracteres. |
 | `email`          | VARCHAR(150) | Obrigatório e único. |
 | `cpf`            | VARCHAR(11)  | Obrigatório, único e armazenado sem máscara. |
@@ -75,7 +75,7 @@ O requisito funcional inclui os seguintes dados:
 | CPF             | Obrigatório, validar dígitos e unicidade sem máscara.                     |
 | Telefone        | Persistir somente dígitos após validar DDD e número.                      |
 | Foto            | Opcional, JPEG/PNG, até 5 MB; armazenamento atual em BLOB.                |
-| Matrícula       | Gerada pelo backend, única e imutável.                                    |
+| Matrícula       | Gerada pelo backend, única, imutável e composta por 8 dígitos: ano atual e sequência anual de 4 dígitos. |
 | Status          | Ativo inicialmente; permitir inativação.                                  |
 | Exclusão lógica | Indicador para manter histórico e ocultar registros excluídos dos ativos. |
 

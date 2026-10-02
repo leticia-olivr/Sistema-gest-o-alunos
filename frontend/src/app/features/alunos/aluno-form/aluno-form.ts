@@ -162,6 +162,9 @@ export class AlunoForm implements OnInit {
         this.form.markAsPristine();
         this.removerFoto.set(false);
         this.form.controls.cpf.disable();
+        if (!aluno) {
+          this.voltar(salvo.matricula);
+        }
       },
       error: (error: unknown) => {
         this.enviando.set(false);
@@ -170,12 +173,13 @@ export class AlunoForm implements OnInit {
     });
   }
 
-  voltar(): void {
+  voltar(matriculaCriada?: string): void {
     const params = this.route.snapshot.queryParamMap;
     const queryParams = {
       busca: params.get('busca') || null,
       status: params.get('status') || null,
       page: params.get('page') ? Number(params.get('page')) : null,
+      matriculaCriada: matriculaCriada ?? null,
     };
 
     void this.router.navigate(['/alunos'], {

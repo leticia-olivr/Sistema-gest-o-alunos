@@ -16,7 +16,7 @@ describe('adminGuard', () => {
 
   afterEach(() => vi.unstubAllGlobals());
 
-  it('allows ADMIN and redirects LEITOR to the dashboard', () => {
+  it('allows ADMIN and redirects LEITOR to the student list', () => {
     session.saveToken(createToken('ADMIN'));
     const adminResult = TestBed.runInInjectionContext(() =>
       adminGuard({} as ActivatedRouteSnapshot, {} as RouterStateSnapshot),
@@ -28,7 +28,7 @@ describe('adminGuard', () => {
       adminGuard({} as ActivatedRouteSnapshot, {} as RouterStateSnapshot),
     );
     expect(readerResult).toBeInstanceOf(UrlTree);
-    expect(router.serializeUrl(readerResult as UrlTree)).toBe('/inicio');
+    expect(router.serializeUrl(readerResult as UrlTree)).toBe('/alunos');
   });
 });
 

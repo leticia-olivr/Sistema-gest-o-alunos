@@ -61,7 +61,7 @@ export class Login {
       next: () => {
         this.isSubmitting.set(false);
         const returnUrl = this.activatedRoute.snapshot.queryParamMap.get('returnUrl');
-        const destination = this.isSafeReturnUrl(returnUrl) ? returnUrl : '/inicio';
+        const destination = this.isSafeReturnUrl(returnUrl) ? returnUrl : '/alunos';
         void this.router.navigateByUrl(destination);
       },
       error: (error: unknown) => {

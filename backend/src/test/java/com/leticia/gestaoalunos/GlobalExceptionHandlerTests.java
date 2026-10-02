@@ -48,7 +48,7 @@ class GlobalExceptionHandlerTests {
                 jdbcTemplate.update("DELETE FROM aluno");
                 jdbcTemplate.update(
                                 "INSERT INTO aluno (matricula, nome, email, cpf, telefone, ativo) VALUES (?, ?, ?, ?, ?, ?)",
-                                "A26000000000000001",
+                                "20260001",
                                 "Aluno de teste",
                                 "aluno.teste@example.com",
                                 "52998224725",
@@ -58,7 +58,7 @@ class GlobalExceptionHandlerTests {
                 alunoId = jdbcTemplate.queryForObject(
                                 "SELECT id FROM aluno WHERE matricula = ?",
                                 Long.class,
-                                "A26000000000000001"
+                                "20260001"
                 );
         jdbcTemplate.update("DELETE FROM usuario WHERE usuario = ?", "leitor1234");
         jdbcTemplate.update(

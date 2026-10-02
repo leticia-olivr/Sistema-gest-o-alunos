@@ -18,12 +18,12 @@ export const routes: Routes = [
 			{
 				path: '',
 				pathMatch: 'full',
-				redirectTo: 'inicio',
+				redirectTo: 'alunos',
 			},
 			{
 				path: 'inicio',
-				loadComponent: () =>
-					import('./features/dashboard/dashboard').then((module) => module.Dashboard),
+				pathMatch: 'full',
+				redirectTo: 'alunos',
 			},
 			{
 				path: 'alunos/novo',
@@ -49,7 +49,7 @@ export const routes: Routes = [
 				loadComponent: () =>
 					import('./features/alunos/aluno-form/aluno-form').then((module) => module.AlunoForm),
 			},
-			{ path: '**', redirectTo: 'inicio' },
+			{ path: '**', redirectTo: 'alunos' },
 		],
 	},
 	{ path: '**', redirectTo: '' },

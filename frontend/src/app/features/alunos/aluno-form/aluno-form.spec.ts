@@ -1,7 +1,7 @@
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { provideRouter } from '@angular/router';
+import { Router, provideRouter } from '@angular/router';
 import { AlunoForm } from './aluno-form';
 
 describe('AlunoForm', () => {
@@ -69,6 +69,7 @@ describe('AlunoForm', () => {
     const fixture = TestBed.createComponent(AlunoForm);
     fixture.detectChanges();
     const component = fixture.componentInstance;
+    const navigateSpy = vi.spyOn(TestBed.inject(Router), 'navigate');
     component.form.controls.nome.setValue('Ana Souza');
     component.form.controls.email.setValue('ana@example.com');
     component.form.controls.cpf.setValue('529.982.247-25');
@@ -83,7 +84,7 @@ describe('AlunoForm', () => {
     expect(request.request.body.get('matricula')).toBeNull();
     request.flush({
       id: 1,
-      matricula: 'A26A1B2C3D4E5F60718',
+      matricula: '20260001',
       nome: 'Ana Souza',
       email: 'ana@example.com',
       cpf: '52998224725',
@@ -93,7 +94,10 @@ describe('AlunoForm', () => {
       fotoUrl: null,
     });
 
-    expect(component.sucesso()).toContain('A26A1B2C3D4E5F60718');
+    expect(component.sucesso()).toContain('20260001');
     expect(component.confirmarSaida()).toBe(true);
+    expect(navigateSpy).toHaveBeenCalled();
+    expect(navigateSpy.mock.calls[0][0]).toEqual(['/alunos']);
+    expect(navigateSpy.mock.calls[0][1]?.queryParams?.['matriculaCriada']).toBe('20260001');
   });
 });

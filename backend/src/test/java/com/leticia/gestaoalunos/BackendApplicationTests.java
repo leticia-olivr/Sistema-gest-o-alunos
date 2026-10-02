@@ -9,7 +9,10 @@ import org.springframework.boot.DefaultApplicationArguments;
 import com.leticia.gestaoalunos.config.AlunoDevDataInitializer;
 import com.leticia.gestaoalunos.config.UsuarioDevDataInitializer;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest(properties = "jwt.secret=test-only-jwt-secret-not-for-production-0123456789abcdef")
 class BackendApplicationTests {
@@ -53,6 +56,8 @@ class BackendApplicationTests {
 
 		Integer alunoCount = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM aluno", Integer.class);
 		assertEquals(25, alunoCount);
+		List<String> matriculas = jdbcTemplate.queryForList("SELECT matricula FROM aluno", String.class);
+		assertTrue(matriculas.stream().allMatch(matricula -> matricula.matches("[0-9]{8}")));
 	}
 
 	@Test

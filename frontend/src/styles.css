@@ -1,10 +1,57 @@
+:root {
+	--app-font-family: Roboto, 'Helvetica Neue', Arial, sans-serif;
+	--app-font-size: 14px;
+	--app-heading-size: 26px;
+	--app-subheading-size: 20px;
+	--app-control-height: 40px;
+	--app-control-radius: 6px;
+}
+
 html,
 body {
 	min-height: 100%;
+	font-family: var(--app-font-family);
+	font-size: var(--app-font-size);
+	line-height: 1.5;
 }
 
 body {
 	margin: 0;
+}
+
+button,
+input,
+select,
+textarea {
+	font: inherit;
+}
+
+h1,
+h2 {
+	color: var(--mat-sys-on-surface);
+	line-height: 1.25;
+}
+
+h1 {
+	font-size: var(--app-heading-size);
+	font-weight: 600;
+}
+
+h2 {
+	font-size: var(--app-subheading-size);
+	font-weight: 600;
+}
+
+.mat-mdc-button-base {
+	min-height: var(--app-control-height);
+	border-radius: var(--app-control-radius);
+	font-family: var(--app-font-family);
+	font-size: var(--app-font-size);
+	font-weight: 500;
+}
+
+.mat-mdc-form-field {
+	font-family: var(--app-font-family);
 }
 
 app-root {

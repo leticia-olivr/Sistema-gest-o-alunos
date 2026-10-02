@@ -16,6 +16,8 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
+import java.time.Year;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -67,7 +69,8 @@ class AlunoApiTests {
         JsonNode created = objectMapper.readTree(createResult.getResponse().getContentAsString());
         long id = created.get("id").asLong();
         String matricula = created.get("matricula").asText();
-        assertTrue(matricula.matches("A[0-9]{2}[A-F0-9]{16}"));
+        assertTrue(matricula.matches("[0-9]{8}"));
+        assertTrue(matricula.startsWith(String.valueOf(Year.now().getValue())));
         assertEquals("52998224725", created.get("cpf").asText());
         assertEquals("11987654321", created.get("telefone").asText());
 

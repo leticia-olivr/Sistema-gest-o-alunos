@@ -12,6 +12,10 @@ export class AlunoApiService {
     return this.http.get<Aluno>(`${this.endpoint}/${id}`);
   }
 
+  buscarFoto(id: number): Observable<Blob> {
+    return this.http.get(`${this.endpoint}/${id}/foto`, { responseType: 'blob' });
+  }
+
   listar(params: {
     busca: string;
     status: AlunoStatusFilter;

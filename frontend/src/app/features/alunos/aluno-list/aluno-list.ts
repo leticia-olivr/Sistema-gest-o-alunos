@@ -37,6 +37,7 @@ export class AlunoList implements OnInit, OnDestroy {
   readonly alunos = signal<Aluno[]>([]);
   readonly carregando = signal(true);
   readonly erro = signal('');
+  readonly sucesso = signal('');
   readonly status = signal<AlunoStatusFilter>('ATIVOS');
   readonly pagina = signal(0);
   readonly tamanhoPagina = 10;
@@ -46,6 +47,7 @@ export class AlunoList implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.aplicarEstadoDaUrl();
+    this.consumirMensagemCadastro();
     this.searchSubscription = this.busca.valueChanges
       .pipe(debounceTime(300), distinctUntilChanged())
       .subscribe(() => {
@@ -141,6 +143,10 @@ export class AlunoList implements OnInit, OnDestroy {
     return Math.min((this.pagina() + 1) * this.tamanhoPagina, this.total());
   }
 
+  paginas(): number[] {
+    return Array.from({ length: this.totalPaginas() }, (_, pagina) => pagina);
+  }
+
   private aplicarEstadoDaUrl(): void {
     const busca = this.route.snapshot.queryParamMap.get('busca') ?? '';
     const statusParam = this.route.snapshot.queryParamMap.get('status');
@@ -167,6 +173,21 @@ export class AlunoList implements OnInit, OnDestroy {
 
   private ehStatusValido(status: string | null): status is AlunoStatusFilter {
     return status === 'ATIVOS' || status === 'INATIVOS' || status === 'TODOS';
+  }
+
+  private consumirMensagemCadastro(): void {
+    const matricula = this.route.snapshot.queryParamMap.get('matriculaCriada');
+    if (!matricula) {
+      return;
+    }
+
+    this.sucesso.set(`Cadastro realizado. Matrícula: ${matricula}.`);
+    void this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { matriculaCriada: null },
+      queryParamsHandling: 'merge',
+      replaceUrl: true,
+    });
   }
 
   private carregar(): void {

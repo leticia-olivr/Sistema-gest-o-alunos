@@ -44,7 +44,50 @@ describe('AlunoList', () => {
 
     expect(fixture.nativeElement.textContent).toContain('Ana Souza');
     expect(fixture.nativeElement.textContent).toContain('1–10 de 21 alunos');
-    expect(fixture.nativeElement.textContent).toContain('Página 1 de 3');
+    expect(fixture.nativeElement.textContent).not.toContain('Página 1 de 3');
+    expect(fixture.nativeElement.querySelectorAll('.page-controls button[aria-current="page"]').length).toBe(1);
+    expect(fixture.nativeElement.querySelector('.page-controls button[aria-label="Página anterior"]')?.textContent.trim()).toBe('<');
+    expect(fixture.nativeElement.querySelector('.page-controls button[aria-label="Próxima página"]')?.textContent.trim()).toBe('>');
+    expect(fixture.nativeElement.textContent).not.toContain('Anterior');
+    expect(fixture.nativeElement.textContent).not.toContain('Próxima');
+    expect(fixture.nativeElement.textContent).toContain('1');
+    expect(fixture.nativeElement.textContent).toContain('2');
+    expect(fixture.nativeElement.textContent).toContain('3');
+  });
+
+  it('shows the correct range and current page on the final page', () => {
+    const fixture = TestBed.createComponent(AlunoList);
+    fixture.detectChanges();
+    httpTestingController.expectOne((httpRequest) => httpRequest.url === '/api/alunos').flush({
+      content: Array.from({ length: 4 }, (_, index) => createAluno(index + 21, `Aluno ${index + 21}`)),
+      page: 2,
+      size: 10,
+      totalElements: 24,
+      totalPages: 3,
+    });
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toContain('21–24 de 24 alunos');
+    expect(fixture.nativeElement.textContent).not.toContain('Página 3 de 3');
+    expect(fixture.nativeElement.querySelector('.page-controls button[aria-current="page"]')?.textContent.trim()).toBe('3');
+    expect(fixture.nativeElement.querySelector('.page-controls button[aria-label="Página anterior"]')?.disabled).toBe(false);
+    expect(fixture.nativeElement.querySelector('.page-controls button[aria-label="Próxima página"]')?.disabled).toBe(true);
+  });
+
+  it('shows the created matrícula after returning to the list', async () => {
+    await router.navigateByUrl('/alunos?matriculaCriada=20260001');
+    const fixture = TestBed.createComponent(AlunoList);
+    fixture.detectChanges();
+    httpTestingController.expectOne((httpRequest) => httpRequest.url === '/api/alunos').flush({
+      content: [createAluno(1, 'Ana Souza')],
+      page: 0,
+      size: 10,
+      totalElements: 1,
+      totalPages: 1,
+    });
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toContain('Cadastro realizado. Matrícula: 20260001.');
   });
 
   it('sends the selected status and requested page to the API', () => {
@@ -169,7 +212,7 @@ describe('AlunoList', () => {
 function createAluno(id: number, nome: string) {
   return {
     id,
-    matricula: `A26${String(id).padStart(16, '0')}`,
+    matricula: String(20260000 + id),
     nome,
     email: `aluno${id}@example.com`,
     cpf: '52998224725',

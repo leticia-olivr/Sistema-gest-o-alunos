@@ -50,6 +50,19 @@ describe('authInterceptor', () => {
     request.flush({});
   });
 
+  it('adds the Bearer token to protected photo downloads', () => {
+    session.saveToken(createToken(Math.floor(Date.now() / 1000) + 3600));
+
+    http.get('/api/alunos/1/foto', { responseType: 'blob' }).subscribe();
+
+    const request = httpTestingController.expectOne('/api/alunos/1/foto');
+    expect(request.request.headers.get('Authorization')).toBe(
+      `Bearer ${session.getToken()}`,
+    );
+    expect(request.request.responseType).toBe('blob');
+    request.flush(new Blob(['photo'], { type: 'image/png' }));
+  });
+
   it('does not add a token to the login request', () => {
     session.saveToken(createToken(Math.floor(Date.now() / 1000) + 3600));
 

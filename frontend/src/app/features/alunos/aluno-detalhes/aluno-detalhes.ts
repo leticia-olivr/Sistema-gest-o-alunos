@@ -1,6 +1,6 @@
 import { DatePipe } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Aluno } from '../models/aluno.model';
@@ -12,7 +12,7 @@ import { AlunoApiService } from '../services/aluno-api.service';
   templateUrl: './aluno-detalhes.html',
   styleUrl: './aluno-detalhes.css',
 })
-export class AlunoDetalhes implements OnInit {
+export class AlunoDetalhes implements OnInit, OnDestroy {
   private readonly api = inject(AlunoApiService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
@@ -20,6 +20,13 @@ export class AlunoDetalhes implements OnInit {
   readonly carregando = signal(false);
   readonly erro = signal('');
   readonly aluno = signal<Aluno | null>(null);
+  readonly carregandoFoto = signal(false);
+  readonly fotoExibicao = signal<string | null>(null);
+  readonly fotoIndisponivel = signal(false);
+  private fotoObjectUrl: string | null = null;
+  private fotoRequest?: ReturnType<AlunoApiService['buscarFoto']> extends import('rxjs').Observable<Blob>
+    ? import('rxjs').Subscription
+    : never;
 
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));
@@ -29,6 +36,11 @@ export class AlunoDetalhes implements OnInit {
     }
 
     this.erro.set('Aluno não encontrado.');
+  }
+
+  ngOnDestroy(): void {
+    this.fotoRequest?.unsubscribe();
+    this.liberarFoto();
   }
 
   voltar(): void {
@@ -52,12 +64,39 @@ export class AlunoDetalhes implements OnInit {
       next: (aluno) => {
         this.aluno.set(aluno);
         this.carregando.set(false);
+        if (aluno.fotoUrl) {
+          this.carregarFoto(id);
+        }
       },
       error: (error: unknown) => {
         this.carregando.set(false);
         this.erro.set(this.mensagemErro(error));
       },
     });
+  }
+
+  private carregarFoto(id: number): void {
+    this.carregandoFoto.set(true);
+    this.fotoIndisponivel.set(false);
+    this.fotoRequest = this.api.buscarFoto(id).subscribe({
+      next: (foto) => {
+        this.liberarFoto();
+        this.fotoObjectUrl = URL.createObjectURL(foto);
+        this.fotoExibicao.set(this.fotoObjectUrl);
+        this.carregandoFoto.set(false);
+      },
+      error: () => {
+        this.carregandoFoto.set(false);
+        this.fotoIndisponivel.set(true);
+      },
+    });
+  }
+
+  private liberarFoto(): void {
+    if (this.fotoObjectUrl) {
+      URL.revokeObjectURL(this.fotoObjectUrl);
+      this.fotoObjectUrl = null;
+    }
   }
 
   private mensagemErro(error: unknown): string {

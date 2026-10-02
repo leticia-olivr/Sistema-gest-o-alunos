@@ -9,6 +9,10 @@
     }
   </header>
 
+  @if (sucesso()) {
+    <p class="success-message" role="status">{{ sucesso() }}</p>
+  }
+
   <div class="list-controls">
     <mat-form-field appearance="outline" class="search-field">
       <mat-label>Buscar por nome ou matrícula</mat-label>
@@ -91,23 +95,37 @@
       <p>{{ primeiroResultado() }}–{{ ultimoResultado() }} de {{ total() }} alunos</p>
       <div class="page-controls">
         <button
-          mat-stroked-button
+          mat-button
           type="button"
+          class="page-arrow"
           aria-label="Página anterior"
           [disabled]="pagina() === 0"
           (click)="irParaPagina(pagina() - 1)"
         >
-          Anterior
+          &lt;
         </button>
-        <span aria-live="polite">Página {{ pagina() + 1 }} de {{ totalPaginas() }}</span>
+        @for (numeroPagina of paginas(); track numeroPagina) {
+          <button
+            mat-button
+            type="button"
+            [class.current-page]="numeroPagina === pagina()"
+            [attr.aria-label]="'Página ' + (numeroPagina + 1)"
+            [attr.aria-current]="numeroPagina === pagina() ? 'page' : null"
+            [disabled]="numeroPagina === pagina()"
+            (click)="irParaPagina(numeroPagina)"
+          >
+            {{ numeroPagina + 1 }}
+          </button>
+        }
         <button
-          mat-stroked-button
+          mat-button
           type="button"
+          class="page-arrow"
           aria-label="Próxima página"
           [disabled]="pagina() + 1 >= totalPaginas()"
           (click)="irParaPagina(pagina() + 1)"
         >
-          Próxima
+          &gt;
         </button>
       </div>
     </footer>

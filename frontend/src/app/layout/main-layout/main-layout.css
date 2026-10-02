@@ -4,7 +4,7 @@
 
 .app-header {
   align-items: center;
-  border-bottom: 1px solid #d9dee5;
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
   display: flex;
   justify-content: space-between;
   min-height: 64px;
@@ -12,15 +12,19 @@
 }
 
 .app-brand {
-  color: inherit;
+  color: var(--mat-sys-on-surface);
   font-weight: 600;
   text-decoration: none;
+}
+
+.app-brand:hover {
+  color: var(--mat-sys-primary);
 }
 
 .app-content {
   margin: 0 auto;
   max-width: 1120px;
-  padding: 32px 24px;
+  padding: 28px 24px;
 }
 
 @media (max-width: 600px) {

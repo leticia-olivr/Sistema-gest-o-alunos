@@ -34,12 +34,12 @@ public class AlunoDevDataInitializer implements ApplicationRunner {
     @Override
     @Transactional
     public void run(ApplicationArguments args) {
-        int ano = Year.now().getValue() % 100;
+        int ano = Year.now().getValue();
         List<Aluno> alunosFaltantes = new ArrayList<>();
 
         for (int index = 0; index < NOMES.size(); index++) {
             int numero = index + 1;
-            String matricula = "A" + String.format("%02d%016X", ano, numero);
+            String matricula = String.format(Locale.ROOT, "%04d%04d", ano, numero);
             if (!alunoRepository.existsByMatricula(matricula)) {
                 String nome = NOMES.get(index);
                 alunosFaltantes.add(new Aluno(

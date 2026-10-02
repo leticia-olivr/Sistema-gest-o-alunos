@@ -6,5 +6,5 @@ export const adminGuard: CanActivateFn = () => {
   const session = inject(AuthSessionService);
   const router = inject(Router);
 
-  return session.getRole() === 'ADMIN' ? true : router.createUrlTree(['/inicio']);
+  return session.getRole() === 'ADMIN' ? true : router.createUrlTree(['/alunos']);
 };

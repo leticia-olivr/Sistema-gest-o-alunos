@@ -14,8 +14,12 @@
   } @else if (aluno(); as registro) {
     <article class="detail-card">
       <div class="photo-panel" aria-label="Foto do aluno">
-        @if (registro.fotoUrl) {
-          <img [src]="registro.fotoUrl" [alt]="'Foto de ' + registro.nome" />
+        @if (fotoExibicao(); as foto) {
+          <img [src]="foto" [alt]="'Foto de ' + registro.nome" />
+        } @else if (carregandoFoto()) {
+          <div class="photo-placeholder" role="status">Carregando foto...</div>
+        } @else if (fotoIndisponivel()) {
+          <div class="photo-placeholder" role="status">Foto indisponível</div>
         } @else {
           <div class="photo-placeholder" aria-label="Sem foto cadastrada">Sem foto</div>
         }
