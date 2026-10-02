@@ -1,6 +1,6 @@
 # Sistema de Gestão de Alunos
 
-Monorepo de um sistema para consulta e manutenção de cadastro de alunos. O **Protótipo 2.0** é a fonte oficial dos requisitos; várias funcionalidades do desafio ainda estão pendentes de implementação.
+Monorepo de um sistema para consulta e manutenção de cadastro de alunos. O **Protótipo 2.0** é a fonte oficial dos requisitos. O fluxo principal está implementado; consulte [`docs/backlog.md`](docs/backlog.md) para as pendências de qualidade e entrega.
 
 ## Estado atual
 
@@ -8,8 +8,9 @@ Monorepo de um sistema para consulta e manutenção de cadastro de alunos. O **P
 - Frontend Angular standalone com login por usuário, proteção de rota, logout local e interceptor Bearer.
 - O perfil local `dev` (padrão) carrega 25 alunos de demonstração; configure `SPRING_PROFILES_ACTIVE=prod` para não executar essa carga.
 - Backend valida as credenciais, emite JWT, responde `401` para sessão inválida e aplica regras de perfil nos caminhos previstos da API.
-- Cadastro de alunos inclui listagem paginada com busca/filtros, detalhes, criação e edição, foto, inativação/reativação; ações de escrita exigem perfil Administrador.
-- O formulário de edição protege contra saída com alterações não salvas. Acompanhe as pendências em [`docs/backlog.md`](docs/backlog.md).
+- Após o login, a aplicação abre diretamente a lista de alunos. O fluxo inclui listagem paginada, busca/filtros, detalhes, cadastro e edição; cadastro bem-sucedido retorna à lista com a matrícula criada.
+- Matrículas têm 8 dígitos numéricos no formato `AAAA####` (ano e sequência anual). Escrita, incluindo inativação/reativação, exige perfil Administrador.
+- O formulário protege contra saída com alterações não salvas. Fotos JPEG/PNG de até 5 MB são armazenadas no banco e carregadas na tela de detalhes com autenticação.
 - Conta inicial local: usuário `admin1234`, senha `Senha123`. Credencial somente para desenvolvimento; troque-a antes de usar qualquer ambiente compartilhado ou produção.
 
 ## Requisitos
@@ -36,7 +37,7 @@ npm install
 npm start
 ```
 
-O Angular inicia por padrão em `http://localhost:4200`. O proxy de desenvolvimento encaminha chamadas `/api` para `http://localhost:8080`; por isso, inicie o backend antes de testar o login.
+O Angular inicia por padrão em `http://localhost:4200/login`. Após autenticar, abre a lista em `/alunos`. O proxy de desenvolvimento encaminha chamadas `/api` para `http://localhost:8080`; inicie o backend antes de testar a aplicação.
 
 ## Endereços locais
 
