@@ -78,7 +78,7 @@ O corpo enviado ao backend segue os nomes definidos pelo DTO Java `LoginRequest`
 }
 ```
 
-Para execução local, use `admin1234` com a senha `Senha123`. No perfil `dev`, também existe a conta de demonstração `leitor1234`, com a mesma senha; ela pode consultar alunos, mas não executar ações de escrita. Essas credenciais são públicas no projeto e não devem ser usadas em produção.
+Para execução local com o seed Flyway, use `admin1234` e a senha de desenvolvimento `Senha123`. Essa credencial é pública no projeto e não deve ser usada em produção.
 
 O backend responde com o token:
 
