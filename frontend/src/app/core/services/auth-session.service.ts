@@ -30,20 +30,8 @@ export class AuthSessionService {
       return null;
     }
 
-    try {
-      const payloadSegment = token.split('.')[1];
-      if (!payloadSegment) {
-        return null;
-      }
-      const base64 = payloadSegment
-        .replace(/-/g, '+')
-        .replace(/_/g, '/')
-        .padEnd(Math.ceil(payloadSegment.length / 4) * 4, '=');
-      const payload = JSON.parse(atob(base64)) as { role?: unknown };
-      return typeof payload.role === 'string' ? payload.role : null;
-    } catch {
-      return null;
-    }
+    const role = this.decodePayload(token)?.['role'];
+    return typeof role === 'string' ? role : null;
   }
 
   saveToken(token: string): void {
@@ -60,25 +48,26 @@ export class AuthSessionService {
   }
 
   private hasValidExpiry(token: string): boolean {
+    const expiry = this.decodePayload(token)?.['exp'];
+    return typeof expiry === 'number' && expiry > Math.floor(Date.now() / 1000);
+  }
+
+  private decodePayload(token: string): Record<string, unknown> | null {
     try {
       const payloadSegment = token.split('.')[1];
-
       if (!payloadSegment) {
-        return false;
+        return null;
       }
-
       const base64 = payloadSegment
         .replace(/-/g, '+')
         .replace(/_/g, '/')
         .padEnd(Math.ceil(payloadSegment.length / 4) * 4, '=');
-      const payload = JSON.parse(atob(base64)) as { exp?: unknown };
-
-      return (
-        typeof payload.exp === 'number' &&
-        payload.exp > Math.floor(Date.now() / 1000)
-      );
+      const payload: unknown = JSON.parse(atob(base64));
+      return typeof payload === 'object' && payload !== null
+        ? payload as Record<string, unknown>
+        : null;
     } catch {
-      return false;
+      return null;
     }
   }
 }

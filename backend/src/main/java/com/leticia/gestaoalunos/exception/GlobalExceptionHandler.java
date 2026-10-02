@@ -1,8 +1,8 @@
 package com.leticia.gestaoalunos.exception;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -12,7 +12,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestControllerAdvice
-public class AuthExceptionHandler {
+public class GlobalExceptionHandler {
 
     private static final String INVALID_CREDENTIALS_MESSAGE =
             "Usuário ou senha incorretos.";
@@ -33,20 +33,20 @@ public class AuthExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-        public ResponseEntity<?> handleValidation(
+    public ResponseEntity<?> handleValidation(
             MethodArgumentNotValidException exception
     ) {
-                if (exception.getParameter().hasParameterAnnotation(RequestBody.class)) {
-                        return ResponseEntity.badRequest()
-                                        .body(new ErrorResponse("Requisição inválida."));
-                }
+        if (exception.getParameter().hasParameterAnnotation(RequestBody.class)) {
+            return ResponseEntity.badRequest()
+                    .body(new ErrorResponse("Requisição inválida."));
+        }
         Map<String, String> errors = exception.getBindingResult().getFieldErrors().stream()
                 .collect(Collectors.toMap(
                         error -> error.getField(),
                         error -> error.getDefaultMessage() == null ? "Valor inválido." : error.getDefaultMessage(),
                         (first, ignored) -> first
                 ));
-        return ResponseEntity.unprocessableEntity()
+        return ResponseEntity.unprocessableContent()
                 .body(new ValidationErrorResponse("Dados inválidos.", errors));
     }
 

@@ -214,7 +214,7 @@ O filtro confere se a claim `role` assinada corresponde ao perfil atual persisti
 
 ### Tratamento de erros e itens a revisar
 
-- A exceção `InvalidCredentialsException` é mapeada por `AuthExceptionHandler` para HTTP `401` e a mesma mensagem genérica nos casos de usuário inexistente ou senha incorreta.
+- A exceção `InvalidCredentialsException` é mapeada por `GlobalExceptionHandler` para HTTP `401` e a mesma mensagem genérica nos casos de usuário inexistente ou senha incorreta.
 - A propriedade `ativo` existe na entidade, mas o fluxo atual de login não verifica se o usuário está ativo.
 - A chave JWT é injetada pela variável `JWT_SECRET`; mantenha-a protegida e use valores diferentes por ambiente.
 - A configuração atual não define CORS. O proxy do Angular resolve isso no desenvolvimento local; em produção, o servidor precisa configurar o proxy ou o backend precisa permitir explicitamente a origem do frontend.

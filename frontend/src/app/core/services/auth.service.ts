@@ -15,10 +15,6 @@ export class AuthService {
       .pipe(tap(({ token }) => this.session.saveToken(token)));
   }
 
-  getToken(): string | null {
-    return this.session.getToken();
-  }
-
   logout(): void {
     this.session.logout();
   }

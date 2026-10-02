@@ -22,37 +22,54 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest(properties = "jwt.secret=test-only-jwt-secret-not-for-production-0123456789abcdef")
 @AutoConfigureMockMvc
-class AuthExceptionHandlerTests {
+class GlobalExceptionHandlerTests {
 
-        @Autowired
-        private JdbcTemplate jdbcTemplate;
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
-        private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
-        @Autowired
-        private PasswordEncoder passwordEncoder;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
-        @Autowired
-        private JwtService jwtService;
+    @Autowired
+    private JwtService jwtService;
 
     @Autowired
     private MockMvc mockMvc;
 
-        @Autowired
-        private UsuarioRepository usuarioRepository;
+    @Autowired
+    private UsuarioRepository usuarioRepository;
 
-        @BeforeEach
-        void createReaderAccount() {
-                jdbcTemplate.update("DELETE FROM usuario WHERE usuario = ?", "leitor1234");
+        private Long alunoId;
+
+    @BeforeEach
+    void createReaderAccount() {
+                jdbcTemplate.update("DELETE FROM aluno");
                 jdbcTemplate.update(
-                                "INSERT INTO usuario (nome, usuario, senha, role, ativo) VALUES (?, ?, ?, ?, ?)",
-                                "Leitor de teste",
-                                "leitor1234",
-                                passwordEncoder.encode("Senha123"),
-                                "LEITOR",
+                                "INSERT INTO aluno (matricula, nome, email, cpf, telefone, ativo) VALUES (?, ?, ?, ?, ?, ?)",
+                                "A26000000000000001",
+                                "Aluno de teste",
+                                "aluno.teste@example.com",
+                                "52998224725",
+                                "11987654321",
                                 true
                 );
-        }
+                alunoId = jdbcTemplate.queryForObject(
+                                "SELECT id FROM aluno WHERE matricula = ?",
+                                Long.class,
+                                "A26000000000000001"
+                );
+        jdbcTemplate.update("DELETE FROM usuario WHERE usuario = ?", "leitor1234");
+        jdbcTemplate.update(
+                "INSERT INTO usuario (nome, usuario, senha, role, ativo) VALUES (?, ?, ?, ?, ?)",
+                "Leitor de teste",
+                "leitor1234",
+                passwordEncoder.encode("Senha123"),
+                "LEITOR",
+                true
+        );
+    }
 
     @Test
     void returnsSameUnauthorizedResponseForUnknownUserAndWrongPassword()
@@ -108,7 +125,7 @@ class AuthExceptionHandlerTests {
                 usuarioRepository.findByUsuario("admin1234").orElseThrow()
         );
 
-        mockMvc.perform(get("/api/alunos/1")
+        mockMvc.perform(get("/api/alunos/" + alunoId)
                         .header("Authorization", "Bearer " + readerToken))
                 .andExpect(status().isOk());
 
@@ -139,18 +156,18 @@ class AuthExceptionHandlerTests {
                 .get("token")
                 .asText();
 
-        mockMvc.perform(get("/api/alunos/1")
+        mockMvc.perform(get("/api/alunos/" + alunoId)
                         .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk());
     }
 
-        @Test
-        void seededAdminCanLoginWithDevelopmentPassword() throws Exception {
-                mockMvc.perform(post("/api/auth/login")
-                                                .contentType(MediaType.APPLICATION_JSON)
-                                                .content("""
-                                                                {"usuario":"admin1234","senha":"Senha123"}
-                                                                """))
-                                .andExpect(status().isOk());
-        }
+    @Test
+    void seededAdminCanLoginWithDevelopmentPassword() throws Exception {
+        mockMvc.perform(post("/api/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {"usuario":"admin1234","senha":"Senha123"}
+                                """))
+                .andExpect(status().isOk());
+    }
 }
