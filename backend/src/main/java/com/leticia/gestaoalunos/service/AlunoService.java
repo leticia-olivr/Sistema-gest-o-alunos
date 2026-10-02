@@ -154,6 +154,13 @@ public class AlunoService {
         salvar(aluno);
     }
 
+    @Transactional
+    public void reativar(Long id) {
+        Aluno aluno = buscarEntidade(id);
+        aluno.setAtivo(true);
+        salvar(aluno);
+    }
+
     private Aluno buscarEntidade(Long id) {
         return alunoRepository.findById(id).orElseThrow(this::naoEncontrado);
     }

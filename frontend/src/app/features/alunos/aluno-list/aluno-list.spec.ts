@@ -1,18 +1,20 @@
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { provideRouter } from '@angular/router';
+import { Router, provideRouter } from '@angular/router';
 import { AlunoList } from './aluno-list';
 
 describe('AlunoList', () => {
   let httpTestingController: HttpTestingController;
+  let router: Router;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [AlunoList],
-      providers: [provideRouter([]), provideHttpClient(), provideHttpClientTesting()],
+      providers: [provideRouter([{ path: 'alunos', component: AlunoList }]), provideHttpClient(), provideHttpClientTesting()],
     });
     stubLocalStorage();
+    router = TestBed.inject(Router);
     httpTestingController = TestBed.inject(HttpTestingController);
   });
 
@@ -90,6 +92,77 @@ describe('AlunoList', () => {
 
     expect(fixture.componentInstance.pagina()).toBe(1);
     expect(fixture.componentInstance.primeiroResultado()).toBe(11);
+  });
+
+  it('restores the list state from the URL query string', async () => {
+    await router.navigateByUrl('/alunos?busca=Ana&status=TODOS&page=2');
+    const fixture = TestBed.createComponent(AlunoList);
+    fixture.detectChanges();
+
+    const request = httpTestingController.expectOne((httpRequest) =>
+      httpRequest.url === '/api/alunos'
+      && httpRequest.params.get('busca') === 'Ana'
+      && httpRequest.params.get('status') === 'TODOS'
+      && httpRequest.params.get('page') === '2'
+      && httpRequest.params.get('size') === '10',
+    );
+    request.flush({
+      content: [createAluno(1, 'Ana Souza')],
+      page: 2,
+      size: 10,
+      totalElements: 21,
+      totalPages: 3,
+    });
+
+    expect(fixture.componentInstance.busca.value).toBe('Ana');
+    expect(fixture.componentInstance.status()).toBe('TODOS');
+    expect(fixture.componentInstance.pagina()).toBe(2);
+  });
+
+  it('keeps the current filters in the URL while navigating between pages', () => {
+    const fixture = TestBed.createComponent(AlunoList);
+    fixture.detectChanges();
+    httpTestingController.expectOne((httpRequest) => httpRequest.url === '/api/alunos').flush({
+      content: [createAluno(1, 'Ana Souza')],
+      page: 0,
+      size: 10,
+      totalElements: 1,
+      totalPages: 1,
+    });
+
+    fixture.componentInstance.busca.setValue('Ana');
+    fixture.componentInstance.alterarStatus('TODOS');
+
+    expect(router.url).toContain('busca=Ana');
+    expect(router.url).toContain('status=TODOS');
+  });
+
+  it('inactivates an active student after confirmation and refreshes the list', () => {
+    vi.stubGlobal('confirm', () => true);
+    const fixture = TestBed.createComponent(AlunoList);
+    fixture.detectChanges();
+    httpTestingController.expectOne((httpRequest) => httpRequest.url === '/api/alunos').flush({
+      content: [createAluno(1, 'Ana Souza')],
+      page: 0,
+      size: 10,
+      totalElements: 1,
+      totalPages: 1,
+    });
+
+    fixture.componentInstance.alternarStatusAluno(createAluno(1, 'Ana Souza'));
+
+    const inativarRequest = httpTestingController.expectOne('/api/alunos/1/inativar');
+    expect(inativarRequest.request.method).toBe('PATCH');
+    inativarRequest.flush(null, { status: 204, statusText: 'No Content' });
+
+    const reloadRequest = httpTestingController.expectOne((httpRequest) => httpRequest.url === '/api/alunos');
+    reloadRequest.flush({
+      content: [],
+      page: 0,
+      size: 10,
+      totalElements: 0,
+      totalPages: 0,
+    });
   });
 });
 

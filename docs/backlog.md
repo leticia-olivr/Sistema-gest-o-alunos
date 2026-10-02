@@ -37,17 +37,17 @@ Esses itens descrevem o que existe hoje. Eles não significam conformidade compl
 ## P1 - Entregar cadastro e consulta de alunos
 
 - [x] Definir entidade e migration `aluno`, conforme [`diagrama-banco.md`](diagrama-banco.md).
-- [x] Implementar DTOs, repositório, serviço e endpoints para criar, listar, consultar, editar e inativar alunos.
+- [x] Implementar DTOs, repositório, serviço e endpoints para criar, listar, consultar, editar, inativar e reativar alunos.
 - [x] Implementar matrícula gerada no backend e constraints/unicidade para matrícula, CPF e e-mail.
 - [x] Implementar validações de nome, e-mail, CPF, telefone e foto no frontend e no servidor.
 - [x] Criar massa inicial com pelo menos 25 alunos no perfil `dev`.
 - [x] Criar listagem com 10 itens por página, ordenação por nome, busca parcial de nome, prefixo de matrícula e filtros de status.
-- [ ] Preservar busca/filtro/ordenação/página ao navegar para detalhes/edição e voltar.
-- [ ] Implementar estados de carregamento, vazio, erro, sucesso e nova tentativa.
-- [ ] Criar detalhes somente leitura com alternativa de foto acessível.
-- [ ] Criar edição com campos imutáveis matrícula/CPF, detecção de dirty state e confirmação ao sair sem salvar.
-- [ ] Implementar inativação e reativação na interface, somente para Administrador, com confirmação acessível e correção da página após a operação.
-- [ ] Restringir ações administrativas na interface e, principalmente, na API.
+- [x] Preservar busca/filtro/ordenação/página ao navegar para detalhes/edição e voltar.
+- [x] Implementar estados de carregamento, vazio, erro, sucesso e nova tentativa.
+- [x] Criar detalhes somente leitura com alternativa de foto acessível.
+- [x] Criar edição com campos imutáveis matrícula/CPF, detecção de dirty state e confirmação ao sair sem salvar.
+- [x] Implementar inativação e reativação na interface, somente para Administrador, com confirmação acessível e correção da página após a operação.
+- [x] Restringir ações administrativas na interface e, principalmente, na API.
 
 ## P2 - Qualidade, segurança e entrega
 

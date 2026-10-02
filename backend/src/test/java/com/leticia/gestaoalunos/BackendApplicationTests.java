@@ -4,8 +4,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.boot.DefaultApplicationArguments;
 import com.leticia.gestaoalunos.config.AlunoDevDataInitializer;
+import com.leticia.gestaoalunos.config.UsuarioDevDataInitializer;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -17,6 +19,12 @@ class BackendApplicationTests {
 
 	@Autowired
 	private AlunoDevDataInitializer alunoDevDataInitializer;
+
+	@Autowired
+	private UsuarioDevDataInitializer usuarioDevDataInitializer;
+
+	@Autowired
+	private PasswordEncoder passwordEncoder;
 
 	@Test
 	void contextLoads() {
@@ -45,6 +53,27 @@ class BackendApplicationTests {
 
 		Integer alunoCount = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM aluno", Integer.class);
 		assertEquals(25, alunoCount);
+	}
+
+	@Test
+	void developmentInitializerCreatesReaderAccountWithEncodedPassword() throws Exception {
+		jdbcTemplate.update("DELETE FROM usuario WHERE usuario = ?", "leitor1234");
+		usuarioDevDataInitializer.run(new DefaultApplicationArguments());
+		usuarioDevDataInitializer.run(new DefaultApplicationArguments());
+
+		String[] leitor = jdbcTemplate.queryForObject(
+				"SELECT role, senha FROM usuario WHERE usuario = ?",
+				(resultSet, rowNum) -> new String[]{resultSet.getString("role"), resultSet.getString("senha")},
+				"leitor1234"
+		);
+
+		assertEquals("LEITOR", leitor[0]);
+		assertEquals(true, passwordEncoder.matches("Senha123", leitor[1]));
+		assertEquals(1, jdbcTemplate.queryForObject(
+				"SELECT COUNT(*) FROM usuario WHERE usuario = ?",
+				Integer.class,
+				"leitor1234"
+		));
 	}
 
 }

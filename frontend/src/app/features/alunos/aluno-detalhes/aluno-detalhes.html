@@ -1,0 +1,56 @@
+<section class="student-detail-page" aria-labelledby="student-detail-title">
+  <header class="page-heading">
+    <div>
+      <p class="eyebrow">Aluno</p>
+      <h1 id="student-detail-title">Detalhes do aluno</h1>
+    </div>
+    <button mat-button type="button" (click)="voltar()">Voltar</button>
+  </header>
+
+  @if (carregando()) {
+    <p class="state-message" role="status">Carregando dados do aluno...</p>
+  } @else if (erro()) {
+    <div class="state-message error-message" role="alert">{{ erro() }}</div>
+  } @else if (aluno(); as registro) {
+    <article class="detail-card">
+      <div class="photo-panel" aria-label="Foto do aluno">
+        @if (registro.fotoUrl) {
+          <img [src]="registro.fotoUrl" [alt]="'Foto de ' + registro.nome" />
+        } @else {
+          <div class="photo-placeholder" aria-label="Sem foto cadastrada">Sem foto</div>
+        }
+      </div>
+
+      <div class="info-panel">
+        <h2>{{ registro.nome }}</h2>
+
+        <dl class="detail-grid">
+          <div>
+            <dt>Matrícula</dt>
+            <dd>{{ registro.matricula }}</dd>
+          </div>
+          <div>
+            <dt>E-mail</dt>
+            <dd>{{ registro.email }}</dd>
+          </div>
+          <div>
+            <dt>CPF</dt>
+            <dd>{{ registro.cpf }}</dd>
+          </div>
+          <div>
+            <dt>Telefone</dt>
+            <dd>{{ registro.telefone }}</dd>
+          </div>
+          <div>
+            <dt>Status</dt>
+            <dd>{{ registro.ativo ? 'Ativo' : 'Inativo' }}</dd>
+          </div>
+          <div>
+            <dt>Data de cadastro</dt>
+            <dd>{{ registro.dataCriacao | date: 'dd/MM/yyyy' }}</dd>
+          </div>
+        </dl>
+      </div>
+    </article>
+  }
+</section>

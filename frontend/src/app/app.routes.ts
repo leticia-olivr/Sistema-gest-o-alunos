@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { adminGuard } from './core/guards/admin.guard';
+import { alunoFormCanDeactivateGuard } from './core/guards/aluno-form-can-deactivate.guard';
 import { authGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
@@ -27,6 +28,7 @@ export const routes: Routes = [
 			{
 				path: 'alunos/novo',
 				canActivate: [adminGuard],
+				canDeactivate: [alunoFormCanDeactivateGuard],
 				loadComponent: () =>
 					import('./features/alunos/aluno-form/aluno-form').then((module) => module.AlunoForm),
 			},
@@ -36,8 +38,14 @@ export const routes: Routes = [
 					import('./features/alunos/aluno-list/aluno-list').then((module) => module.AlunoList),
 			},
 			{
+				path: 'alunos/:id',
+				loadComponent: () =>
+					import('./features/alunos/aluno-detalhes/aluno-detalhes').then((module) => module.AlunoDetalhes),
+			},
+			{
 				path: 'alunos/:id/editar',
 				canActivate: [adminGuard],
+				canDeactivate: [alunoFormCanDeactivateGuard],
 				loadComponent: () =>
 					import('./features/alunos/aluno-form/aluno-form').then((module) => module.AlunoForm),
 			},

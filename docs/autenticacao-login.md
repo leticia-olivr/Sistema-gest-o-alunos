@@ -78,7 +78,7 @@ O corpo enviado ao backend segue os nomes definidos pelo DTO Java `LoginRequest`
 }
 ```
 
-Para execução local com o seed Flyway, use `admin1234` e a senha de desenvolvimento `Senha123`. Essa credencial é pública no projeto e não deve ser usada em produção.
+Para execução local, use `admin1234` com a senha `Senha123`. No perfil `dev`, também existe a conta de demonstração `leitor1234`, com a mesma senha; ela pode consultar alunos, mas não executar ações de escrita. Essas credenciais são públicas no projeto e não devem ser usadas em produção.
 
 O backend responde com o token:
 
@@ -135,7 +135,7 @@ Uma nova chave invalida os JWTs assinados pela chave anterior; será necessário
 
 ## Limites desta etapa
 
-- O login navega para `/inicio`, uma área protegida mínima com logout. A listagem de alunos ainda está pendente no P1.
+- O login navega para `/inicio`, uma área protegida mínima com logout; a aplicação também oferece o fluxo de gestão de alunos descrito em [`arquitetura.md`](arquitetura.md).
 - O interceptor trata `401` de APIs protegidas como sessão expirada; um `401` do próprio endpoint de login continua sendo exibido como credencial inválida.
 - O token fica no `localStorage`, que pode ser acessado por JavaScript executado na mesma origem. Para aplicações com exigência de segurança maior, avalie uma estratégia de sessão com cookie `HttpOnly`, `Secure` e `SameSite`, em conjunto com o backend.
 
@@ -210,13 +210,11 @@ Quando encontra um token, extrai o identificador, busca o usuário, valida a ass
 
 Em `SecurityConfig`, as rotas `/api/auth/**`, `/swagger-ui/**`, `/v3/api-docs/**` e `/h2-console/**` são públicas. `GET /api/alunos/**` aceita `ROLE_ADMIN` e `ROLE_LEITOR`; os demais métodos nesse prefixo e `/api/admin/**` exigem `ROLE_ADMIN`. Outras rotas de API aceitam somente os dois perfis conhecidos. O endpoint de login, portanto, pode ser chamado sem JWT.
 
-O filtro confere se a claim `role` assinada corresponde ao perfil atual persistido e registra `ROLE_ADMIN` ou `ROLE_LEITOR` no contexto. A API de alunos ainda não foi criada; as regras de segurança já estão configuradas para seus caminhos previstos.
+O filtro confere se a claim `role` assinada corresponde ao perfil atual persistido e registra `ROLE_ADMIN` ou `ROLE_LEITOR` no contexto. A API permite leitura de alunos para ADMIN/LEITOR e exige ADMIN para operações de escrita, incluindo inativação e reativação.
 
 ### Tratamento de erros e itens a revisar
 
 - A exceção `InvalidCredentialsException` é mapeada por `AuthExceptionHandler` para HTTP `401` e a mesma mensagem genérica nos casos de usuário inexistente ou senha incorreta.
 - A propriedade `ativo` existe na entidade, mas o fluxo atual de login não verifica se o usuário está ativo.
 - A chave JWT é injetada pela variável `JWT_SECRET`; mantenha-a protegida e use valores diferentes por ambiente.
-- O filtro não captura explicitamente exceções de token malformado ou assinatura inválida. Convém convertê-las em uma resposta de autenticação não autorizada, sem interromper a requisição com erro inesperado.
-- O endpoint ainda não aplica validação Bean Validation (`@Valid`) ao DTO de entrada.
 - A configuração atual não define CORS. O proxy do Angular resolve isso no desenvolvimento local; em produção, o servidor precisa configurar o proxy ou o backend precisa permitir explicitamente a origem do frontend.

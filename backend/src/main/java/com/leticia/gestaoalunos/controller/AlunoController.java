@@ -84,4 +84,10 @@ public class AlunoController {
         alunoService.inativar(id);
         return ResponseEntity.noContent().build();
     }
+
+    @PatchMapping("/{id}/reativar")
+    public ResponseEntity<Void> reativar(@PathVariable Long id) {
+        alunoService.reativar(id);
+        return ResponseEntity.noContent().build();
+    }
 }

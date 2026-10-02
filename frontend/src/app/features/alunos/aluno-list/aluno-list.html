@@ -5,7 +5,7 @@
       <h1 id="student-list-title">Alunos</h1>
     </div>
     @if (isAdmin) {
-      <a mat-flat-button routerLink="/alunos/novo">Cadastrar aluno</a>
+      <a mat-flat-button [routerLink]="['/alunos/novo']" [queryParams]="paramsRetorno()">Cadastrar aluno</a>
     }
   </header>
 
@@ -54,6 +54,7 @@
             <th scope="col">E-mail</th>
             <th scope="col">Telefone</th>
             <th scope="col">Status</th>
+            <th scope="col">Ações</th>
           </tr>
         </thead>
         <tbody>
@@ -68,6 +69,17 @@
                   <span class="status-dot" aria-hidden="true"></span>
                   {{ aluno.ativo ? 'Ativo' : 'Inativo' }}
                 </span>
+              </td>
+              <td>
+                <div class="action-stack">
+                  <a mat-stroked-button [routerLink]="['/alunos', aluno.id]" [queryParams]="paramsRetorno()">Detalhes</a>
+                  @if (isAdmin) {
+                    <a mat-stroked-button [routerLink]="['/alunos', aluno.id, 'editar']" [queryParams]="paramsRetorno()">Editar</a>
+                    <button mat-stroked-button type="button" (click)="alternarStatusAluno(aluno)">
+                      {{ aluno.ativo ? 'Inativar' : 'Reativar' }}
+                    </button>
+                  }
+                </div>
               </td>
             </tr>
           }

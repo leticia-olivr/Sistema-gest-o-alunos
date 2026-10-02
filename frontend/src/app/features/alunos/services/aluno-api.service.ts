@@ -28,4 +28,12 @@ export class AlunoApiService {
   atualizar(id: number, dados: FormData): Observable<Aluno> {
     return this.http.put<Aluno>(`${this.endpoint}/${id}`, dados);
   }
+
+  inativar(id: number): Observable<void> {
+    return this.http.patch<void>(`${this.endpoint}/${id}/inativar`, null);
+  }
+
+  reativar(id: number): Observable<void> {
+    return this.http.patch<void>(`${this.endpoint}/${id}/reativar`, null);
+  }
 }

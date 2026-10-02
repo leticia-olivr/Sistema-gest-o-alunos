@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, HostListener, OnInit, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
@@ -48,6 +48,7 @@ export class AlunoForm implements OnInit {
     foto: this.formBuilder.control<File | null>(null, alunoFotoValidator),
     ativo: this.formBuilder.nonNullable.control(true),
   });
+  private valoresOriginais = this.form.getRawValue();
 
   get editando(): boolean {
     return this.aluno() !== null;
@@ -64,12 +65,37 @@ export class AlunoForm implements OnInit {
     const input = event.target as HTMLInputElement;
     this.form.controls.foto.setValue(input.files?.[0] ?? null);
     this.form.controls.foto.markAsTouched();
+    this.form.controls.foto.markAsDirty();
     this.removerFoto.set(false);
   }
 
   marcarRemocaoFoto(): void {
     this.form.controls.foto.setValue(null);
+    this.form.controls.foto.markAsDirty();
     this.removerFoto.set(true);
+  }
+
+  confirmarSaida(): boolean {
+    return !this.haAlteracoesNaoSalvas() || window.confirm('Existem alterações não salvas. Deseja sair mesmo assim?');
+  }
+
+  haAlteracoesNaoSalvas(): boolean {
+    const valoresAtuais = this.form.getRawValue();
+    return this.removerFoto()
+      || valoresAtuais.nome !== this.valoresOriginais.nome
+      || valoresAtuais.email !== this.valoresOriginais.email
+      || valoresAtuais.cpf !== this.valoresOriginais.cpf
+      || valoresAtuais.telefone !== this.valoresOriginais.telefone
+      || valoresAtuais.foto !== this.valoresOriginais.foto
+      || valoresAtuais.ativo !== this.valoresOriginais.ativo;
+  }
+
+  @HostListener('window:beforeunload', ['$event'])
+  protegerSaidaDoNavegador(event: BeforeUnloadEvent): void {
+    if (this.haAlteracoesNaoSalvas()) {
+      event.preventDefault();
+      event.returnValue = '';
+    }
   }
 
   erroDoCampo(campo: 'nome' | 'email' | 'cpf' | 'telefone' | 'foto'): string {
@@ -109,7 +135,7 @@ export class AlunoForm implements OnInit {
 
   salvar(): void {
     this.form.markAllAsTouched();
-    if (this.form.invalid || this.enviando()) {
+    if (this.form.invalid || this.enviando() || !this.haAlteracoesNaoSalvas()) {
       return;
     }
 
@@ -117,6 +143,7 @@ export class AlunoForm implements OnInit {
     this.erro.set('');
     this.sucesso.set('');
     const dados = this.criarFormData();
+    const valoresEnviados = this.form.getRawValue();
     const aluno = this.aluno();
     const requisicao = aluno
       ? this.api.atualizar(aluno.id, dados)
@@ -131,6 +158,9 @@ export class AlunoForm implements OnInit {
             ? 'Alterações salvas.'
             : `Cadastro realizado. Matrícula: ${salvo.matricula}.`,
         );
+        this.valoresOriginais = valoresEnviados;
+        this.form.markAsPristine();
+        this.removerFoto.set(false);
         this.form.controls.cpf.disable();
       },
       error: (error: unknown) => {
@@ -141,7 +171,17 @@ export class AlunoForm implements OnInit {
   }
 
   voltar(): void {
-    void this.router.navigateByUrl('/inicio');
+    const params = this.route.snapshot.queryParamMap;
+    const queryParams = {
+      busca: params.get('busca') || null,
+      status: params.get('status') || null,
+      page: params.get('page') ? Number(params.get('page')) : null,
+    };
+
+    void this.router.navigate(['/alunos'], {
+      queryParams,
+      replaceUrl: true,
+    });
   }
 
   private carregarAluno(id: number): void {
@@ -156,6 +196,7 @@ export class AlunoForm implements OnInit {
           telefone: aluno.telefone,
           ativo: aluno.ativo,
         });
+        this.valoresOriginais = this.form.getRawValue();
         this.form.controls.cpf.disable();
         this.carregando.set(false);
       },

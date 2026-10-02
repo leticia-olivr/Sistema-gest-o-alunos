@@ -33,6 +33,38 @@ describe('AlunoForm', () => {
     httpTestingController.expectNone('/api/alunos');
   });
 
+  it('allows leaving when the form has no unsaved changes', () => {
+    const fixture = TestBed.createComponent(AlunoForm);
+    fixture.detectChanges();
+
+    expect(fixture.componentInstance.confirmarSaida()).toBe(true);
+  });
+
+  it('asks before leaving when the form has unsaved changes', () => {
+    const fixture = TestBed.createComponent(AlunoForm);
+    fixture.detectChanges();
+    const component = fixture.componentInstance;
+    component.form.controls.nome.setValue('Ana Souza');
+    component.form.controls.nome.markAsDirty();
+    const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(false);
+
+    expect(component.confirmarSaida()).toBe(false);
+    expect(confirmSpy).toHaveBeenCalled();
+  });
+
+  it('treats restored values as unchanged', () => {
+    const fixture = TestBed.createComponent(AlunoForm);
+    fixture.detectChanges();
+    const component = fixture.componentInstance;
+    component.form.controls.nome.setValue('Ana Souza');
+    component.form.controls.nome.markAsDirty();
+    component.form.controls.nome.setValue('');
+
+    expect(component.form.dirty).toBe(true);
+    expect(component.haAlteracoesNaoSalvas()).toBe(false);
+    expect(component.confirmarSaida()).toBe(true);
+  });
+
   it('sends valid student data as multipart without accepting a matrícula', () => {
     const fixture = TestBed.createComponent(AlunoForm);
     fixture.detectChanges();
@@ -62,5 +94,6 @@ describe('AlunoForm', () => {
     });
 
     expect(component.sucesso()).toContain('A26A1B2C3D4E5F60718');
+    expect(component.confirmarSaida()).toBe(true);
   });
 });

@@ -60,7 +60,7 @@ frontend/src/app/
 	    └── validators/ # validações de nome, e-mail, CPF, telefone e foto
 ```
 
-O backend de alunos permite cadastro, consulta paginada, detalhe, edição e inativação. O frontend já possui listagem paginada em `/alunos` e formulário de cadastro/edição; telas de detalhes e ações de edição/inativação a partir da lista ainda estão pendentes. Turmas permanecem fora do escopo obrigatório.
+O backend e o frontend de alunos permitem cadastro, consulta paginada, detalhe, edição e inativação/reativação. A interface oferece busca, filtros, paginação, preservação de estado ao voltar, formulário com matrícula/CPF imutáveis e confirmação ao sair com alterações não salvas. Ações administrativas são protegidas no frontend e na API. Turmas permanecem fora do escopo obrigatório.
 
 ## Fluxo de autenticação atual
 
@@ -95,6 +95,7 @@ O contrato atual envia `usuario` e `senha`. A conta de autenticação não armaz
 - `GET /api/alunos/{id}` e `GET /api/alunos/{id}/foto`: ADMIN/LEITOR; consulta dados e foto.
 - `PUT /api/alunos/{id}`: multipart; ADMIN; atualiza nome, e-mail, telefone, status e foto; CPF e matrícula não são editáveis.
 - `PATCH /api/alunos/{id}/inativar`: ADMIN; inativa sem apagar o histórico.
+- `PATCH /api/alunos/{id}/reativar`: ADMIN; reativa sem apagar o histórico.
 - Fotos: JPEG/PNG, no máximo 5 MB; a listagem retorna `fotoUrl` e não carrega os bytes da imagem na página.
 - `/swagger-ui/**`, `/v3/api-docs/**` e `/h2-console/**`: públicos no `SecurityConfig` atual.
 - Outras rotas: Spring Security exige autenticação.
@@ -102,7 +103,7 @@ O contrato atual envia `usuario` e `senha`. A conta de autenticação não armaz
 - Senhas são comparadas com BCrypt. O JWT inclui o identificador de usuário no `subject`, claim `role` e validade de uma hora.
 - O JWT fica em `localStorage` sob a chave `siga_auth_token`.
 
-Limitações conhecidas: a área `/inicio` é apenas a entrada protegida, a interface de alunos ainda não existe e CORS não está configurado no backend. Logout, guard, interceptor e matriz de perfis estão implementados. O segredo JWT é configurado pela variável de ambiente `JWT_SECRET`. Detalhes em [`autenticacao-login.md`](autenticacao-login.md).
+Limitações conhecidas: a área `/inicio` é apenas a entrada protegida e CORS não está configurado no backend; o proxy atual atende somente `ng serve`. Logout, guards, interceptor e matriz de perfis estão implementados. O segredo JWT é configurado pela variável de ambiente `JWT_SECRET`. Detalhes em [`autenticacao-login.md`](autenticacao-login.md).
 
 ## Persistência
 

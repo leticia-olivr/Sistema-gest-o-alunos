@@ -94,6 +94,12 @@ td {
   background: #7c8582;
 }
 
+.action-stack {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
 .loading-state,
 .feedback-state {
   align-items: center;

@@ -1,6 +1,7 @@
 package com.leticia.gestaoalunos;
 
 import com.leticia.gestaoalunos.config.AlunoDevDataInitializer;
+import com.leticia.gestaoalunos.config.UsuarioDevDataInitializer;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -19,5 +20,6 @@ class AlunoDevDataInitializerProfileTests {
     @Test
     void doesNotRegisterDemoDataInitializerInProductionProfile() {
         assertTrue(applicationContext.getBeansOfType(AlunoDevDataInitializer.class).isEmpty());
+        assertTrue(applicationContext.getBeansOfType(UsuarioDevDataInitializer.class).isEmpty());
     }
 }

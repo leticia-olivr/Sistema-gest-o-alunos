@@ -94,7 +94,7 @@
 
       <footer class="form-actions">
         <button mat-button type="button" (click)="voltar()">Cancelar</button>
-        <button mat-flat-button type="submit" [disabled]="form.invalid || enviando()">
+        <button mat-flat-button type="submit" [disabled]="form.invalid || enviando() || !haAlteracoesNaoSalvas()">
           {{ enviando() ? 'Salvando...' : 'Salvar aluno' }}
         </button>
       </footer>

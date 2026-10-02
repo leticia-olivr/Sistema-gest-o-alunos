@@ -14,15 +14,16 @@ Este arquivo é o resumo curto para orientar ferramentas e pessoas que trabalham
 - Backend: Java 21, Spring Boot 4.1.1, Spring Security, JPA, Flyway, H2, SpringDoc e JJWT.
 - Frontend: Angular 21, TypeScript, Angular Material, standalone components e Reactive Forms.
 - Estrutura backend em camadas: controller, service, repository, entity, DTO, security/config.
-- H2 atual é em memória e contém somente a tabela `usuario`.
-- Existe login JWT; CRUD de alunos/turmas ainda não está implementado.
+- H2 atual é em memória e contém as tabelas `usuario` e `aluno`; os dados são reiniciados ao parar o backend.
+- Login JWT e fluxo principal de alunos estão implementados; turmas permanecem fora do escopo obrigatório.
 
 ## Discrepâncias e prioridades conhecidas
 
 - Login valida identificador alfanumérico (mínimo 8) e senha (8 a 20 caracteres, letras e números) no frontend e servidor; conta de autenticação não armazena e-mail.
 - Protótipo exige senha de 8 a 20 caracteres contendo letras e números; formulário e API aplicam essa regra.
-- Login inclui logout local, AuthGuard, interceptor Bearer e autorização ADMIN/LEITOR nos caminhos previstos da API; a lista e os endpoints de alunos ainda não existem.
-- Entidade/tabela e endpoints de alunos ainda não existem.
+- Login inclui logout local, AuthGuard, interceptor Bearer e autorização ADMIN/LEITOR.
+- Módulo de alunos inclui lista, detalhes, cadastro, edição, inativação/reativação e autorização ADMIN na interface e na API; edição detecta mudanças comparando com os valores originais e confirma a saída sem salvar.
+- Pendências e prioridades atuais estão em [`backlog.md`](backlog.md); a persistência local continua volátil por usar H2 em memória.
 
 Não implementar turmas, notas, frequência ou recuperação de senha como parte do escopo obrigatório. Antes de dizer que um requisito está concluído, verificar código e testes.
 
@@ -120,20 +121,10 @@ http://localhost:4200
 
 ---
 
-## Fase 5 - Gestão de Alunos
+## Status dos módulos
 
-1. Cadastro
-2. Consulta
-3. Edição
-4. Exclusão
-
----
-
-## Fase 6 - Gestão de Turmas
-
-1. Cadastro
-2. Consulta
-3. Relacionamentos
+- Gestão de alunos: fluxo principal implementado; consulte [`backlog.md`](backlog.md) para qualidade e entrega pendentes.
+- Gestão de turmas: fora do escopo obrigatório atual.
 
 ---
 
@@ -167,14 +158,11 @@ O backend injeta `jwt.secret` da variável de ambiente `JWT_SECRET`; não há va
 
 ### Planejamento
 
-1. Concluir autenticação JWT.
-2. Concluir módulo de Alunos.
-3. Concluir módulo de Turmas.
-4. Configurar PostgreSQL.
-5. Criar profile de produção.
-6. Ajustar application-prod.yml.
-7. Executar migrations Flyway.
-8. Validar funcionamento completo da aplicação.
+1. Concluir as pendências de qualidade e entrega listadas em [`backlog.md`](backlog.md).
+2. Definir e implementar uma opção de banco persistente para além do H2 em memória.
+3. Revisar configuração de produção e validar migrations em banco persistente antes do deploy.
+
+Gestão de turmas não faz parte do escopo obrigatório atual.
 
 ### Status
 

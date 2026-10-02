@@ -110,7 +110,7 @@ class AuthExceptionHandlerTests {
 
         mockMvc.perform(get("/api/alunos/1")
                         .header("Authorization", "Bearer " + readerToken))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isOk());
 
         mockMvc.perform(post("/api/alunos/1")
                         .header("Authorization", "Bearer " + readerToken)
@@ -141,7 +141,7 @@ class AuthExceptionHandlerTests {
 
         mockMvc.perform(get("/api/alunos/1")
                         .header("Authorization", "Bearer " + token))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isOk());
     }
 
         @Test

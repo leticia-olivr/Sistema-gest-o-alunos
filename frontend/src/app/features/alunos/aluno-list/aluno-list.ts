@@ -1,7 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnDestroy, OnInit, inject, signal } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -29,6 +29,8 @@ import { Aluno, AlunoStatusFilter } from '../models/aluno.model';
 export class AlunoList implements OnInit, OnDestroy {
   private readonly api = inject(AlunoApiService);
   private readonly authSession = inject(AuthSessionService);
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
   private searchSubscription?: Subscription;
 
   readonly busca = new FormControl('', { nonNullable: true });
@@ -43,10 +45,12 @@ export class AlunoList implements OnInit, OnDestroy {
   readonly isAdmin = this.authSession.getRole() === 'ADMIN';
 
   ngOnInit(): void {
+    this.aplicarEstadoDaUrl();
     this.searchSubscription = this.busca.valueChanges
       .pipe(debounceTime(300), distinctUntilChanged())
       .subscribe(() => {
         this.pagina.set(0);
+        this.sincronizarUrl();
         this.carregar();
       });
     this.carregar();
@@ -59,6 +63,7 @@ export class AlunoList implements OnInit, OnDestroy {
   alterarStatus(status: AlunoStatusFilter): void {
     this.status.set(status);
     this.pagina.set(0);
+    this.sincronizarUrl();
     this.carregar();
   }
 
@@ -67,6 +72,7 @@ export class AlunoList implements OnInit, OnDestroy {
       return;
     }
     this.pagina.set(pagina);
+    this.sincronizarUrl();
     this.carregar();
   }
 
@@ -77,12 +83,54 @@ export class AlunoList implements OnInit, OnDestroy {
   limparBusca(): void {
     const tinhaBusca = Boolean(this.busca.value);
     this.busca.setValue('');
-    if (this.pagina() !== 0) {
-      this.pagina.set(0);
-      if (!tinhaBusca) {
-        this.carregar();
-      }
+    this.pagina.set(0);
+    this.sincronizarUrl();
+    if (!tinhaBusca || this.pagina() === 0) {
+      this.carregar();
     }
+  }
+
+  alternarStatusAluno(aluno: Aluno): void {
+    if (!this.isAdmin) {
+      return;
+    }
+
+    const texto = aluno.ativo
+      ? `Inativar o aluno ${aluno.nome} (${aluno.matricula})? Ele deixará de aparecer entre os ativos.`
+      : `Reativar o aluno ${aluno.nome} (${aluno.matricula})? Ele voltará a aparecer entre os ativos.`;
+
+    if (!window.confirm(texto)) {
+      return;
+    }
+
+    const totalAntes = this.total();
+    const paginaAntes = this.pagina();
+    const requisicao = aluno.ativo ? this.api.inativar(aluno.id) : this.api.reativar(aluno.id);
+
+    this.carregando.set(true);
+    this.erro.set('');
+    requisicao.subscribe({
+      next: () => {
+        const deveVoltarPagina = this.status() === 'ATIVOS' && paginaAntes > 0 && totalAntes <= paginaAntes * this.tamanhoPagina + 1;
+        if (deveVoltarPagina) {
+          this.pagina.set(Math.max(0, paginaAntes - 1));
+          this.sincronizarUrl();
+        }
+        this.carregar();
+      },
+      error: (error: unknown) => {
+        this.carregando.set(false);
+        this.erro.set(this.mensagemErro(error));
+      },
+    });
+  }
+
+  paramsRetorno(): Record<string, string | number | null> {
+    return {
+      busca: this.busca.value.trim() || null,
+      status: this.status(),
+      page: this.pagina(),
+    };
   }
 
   primeiroResultado(): number {
@@ -91,6 +139,34 @@ export class AlunoList implements OnInit, OnDestroy {
 
   ultimoResultado(): number {
     return Math.min((this.pagina() + 1) * this.tamanhoPagina, this.total());
+  }
+
+  private aplicarEstadoDaUrl(): void {
+    const busca = this.route.snapshot.queryParamMap.get('busca') ?? '';
+    const statusParam = this.route.snapshot.queryParamMap.get('status');
+    const pageParam = Number(this.route.snapshot.queryParamMap.get('page') ?? '0');
+
+    this.busca.setValue(busca);
+    this.status.set(this.ehStatusValido(statusParam) ? statusParam : 'ATIVOS');
+    this.pagina.set(Number.isFinite(pageParam) && pageParam >= 0 ? pageParam : 0);
+  }
+
+  private sincronizarUrl(): void {
+    const busca = this.busca.value.trim();
+    void this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: {
+        busca: busca || null,
+        status: this.status(),
+        page: this.pagina(),
+      },
+      queryParamsHandling: 'merge',
+      replaceUrl: true,
+    });
+  }
+
+  private ehStatusValido(status: string | null): status is AlunoStatusFilter {
+    return status === 'ATIVOS' || status === 'INATIVOS' || status === 'TODOS';
   }
 
   private carregar(): void {
