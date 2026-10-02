@@ -55,16 +55,16 @@ O schema de `aluno` foi criado pela migration `V6__create_aluno_table.sql`. Matr
 | ---------------- | ------------ | ------------- |
 | `id`             | BIGINT       | Chave primária autoincrementada. |
 | `matricula`      | VARCHAR(20)  | Obrigatória e única; 8 dígitos numéricos no formato `AAAA####` (ano + sequência anual), gerada pelo backend. |
-| `nome`           | VARCHAR(120) | Obrigatório; API validará 3–120 caracteres. |
-| `email`          | VARCHAR(150) | Obrigatório e único. |
-| `cpf`            | VARCHAR(11)  | Obrigatório, único e armazenado sem máscara. |
-| `telefone`       | VARCHAR(11)  | Obrigatório; API validará e persistirá somente dígitos. |
-| `foto`           | BLOB         | Opcional; bytes da imagem armazenados no banco. |
+| `nome`           | VARCHAR(120) | Obrigatório; API valida 3–120 caracteres e os caracteres permitidos. |
+| `email`          | VARCHAR(150) | Obrigatório, validado e único. |
+| `cpf`            | VARCHAR(11)  | Obrigatório; dígitos verificadores validados, único e armazenado sem máscara. |
+| `telefone`       | VARCHAR(11)  | Obrigatório; API valida DDD/número e persiste somente dígitos. |
+| `foto`           | BLOB         | Opcional; API aceita JPEG/PNG até 5 MB e armazena os bytes no banco. |
 | `foto_mime_type` | VARCHAR(50)  | Opcional; obrigatório quando `foto` estiver presente. |
 | `ativo`          | BOOLEAN      | Obrigatório, padrão `TRUE`; inativação preserva o registro. |
 | `data_criacao`   | TIMESTAMP    | Obrigatório, padrão `CURRENT_TIMESTAMP`. |
 
-Foto em BLOB foi escolhida para a primeira versão, sem infraestrutura externa; a API deverá limitar o tamanho a 5 MB e aceitar JPEG/PNG. Em escala maior, avaliar armazenamento externo.
+Foto em BLOB foi escolhida para a primeira versão, sem infraestrutura externa. A API limita o tamanho a 5 MB e aceita JPEG/PNG. A tela de detalhes baixa o conteúdo pela chamada autenticada `GET /api/alunos/{id}/foto`. Em escala maior, avaliar armazenamento externo.
 
 O requisito funcional inclui os seguintes dados:
 

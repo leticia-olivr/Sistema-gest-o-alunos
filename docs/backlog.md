@@ -45,22 +45,27 @@ Esses itens descrevem o que existe hoje. Eles não significam conformidade compl
 - [x] Preservar busca/filtro/ordenação/página ao navegar para detalhes/edição e voltar.
 - [x] Implementar estados de carregamento, vazio, erro, sucesso e nova tentativa.
 - [x] Criar detalhes somente leitura com alternativa de foto acessível.
+- [x] Após cadastro bem-sucedido, retornar à lista e informar a matrícula criada (RN-024).
 - [x] Criar edição com campos imutáveis matrícula/CPF, detecção de dirty state e confirmação ao sair sem salvar.
 - [x] Implementar inativação e reativação na interface, somente para Administrador, com confirmação acessível e correção da página após a operação.
 - [x] Restringir ações administrativas na interface e, principalmente, na API.
+- [ ] Exibir pré-visualização da foto selecionada antes do envio (RN-022).
 
 ## P2 - Qualidade, segurança e entrega
 
-- [ ] Criar testes unitários de regras de negócio e validações.
+- [ ] Configurar banco persistente para que os dados sobrevivam ao reinício; H2 `mem` é somente para desenvolvimento/demonstração.
+- [x] Criar testes unitários frontend para os validadores de nome, e-mail, CPF, telefone e foto.
+- [ ] Criar testes unitários backend para as regras de negócio e validações do serviço de alunos.
 - [x] Criar testes de integração para endpoints, autenticação e permissões.
 - [ ] Criar um fluxo automatizado crítico frontend/backend.
 - [ ] Testar evidências para Administrador e Leitor, inclusive tentativa de acesso direto à API.
 - [ ] Definir CORS ou proxy reverso por ambiente; o proxy atual é somente para `ng serve`.
 - [ ] Revisar logging, mensagens de erro, acessibilidade e responsividade.
-- [ ] Atualizar [`README.md`](../README.md), documentação OpenAPI e diagramas conforme endpoints e migrations forem entregues.
+- [x] Atualizar README, documentação de arquitetura/autenticação e diagrama do banco para refletir os endpoints e formato atual da matrícula.
+- [ ] Completar descrições de operações e respostas na documentação OpenAPI gerada.
 
 ## Decisões necessárias
 
 - A conta inicial é migrada por V3 a V5; V5 define uma senha de desenvolvimento compatível com as regras de login.
-- Definir onde armazenar fotos (banco, filesystem ou object storage) e limite de retenção.
+- [x] Armazenar fotos no BLOB do banco, aceitar JPEG/PNG e limitar a 5 MB; reavaliar armazenamento externo se a escala aumentar.
 - Definir se JWT continuará sendo a sessão ou se será adotado cookie seguro; qualquer alternativa deve abranger backend e frontend.

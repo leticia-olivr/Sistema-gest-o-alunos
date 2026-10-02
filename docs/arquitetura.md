@@ -43,13 +43,12 @@ backend/src/main/java/com/leticia/gestaoalunos/
 ├── repository/   # UsuarioRepository e AlunoRepository
 ├── security/     # JwtService e JwtAuthenticationFilter
 ├── service/      # AuthService e AlunoService
-└── util/         # utilitários
 
 frontend/src/app/
 ├── core/
 │   ├── models/   # modelos de autenticação
 │   ├── services/ # AuthService e AuthSessionService
-│   └── guards/   # guards de autenticação e ADMIN
+│   └── guards/   # guards de autenticação, ADMIN e saída do formulário
 └── features/
 	├── auth/login/ # componente, template e estilos de login
 	└── alunos/
@@ -60,7 +59,7 @@ frontend/src/app/
 	    └── validators/ # validações de nome, e-mail, CPF, telefone e foto
 ```
 
-O backend e o frontend de alunos permitem cadastro, consulta paginada, detalhe, edição e inativação/reativação. A interface oferece busca, filtros, paginação, preservação de estado ao voltar, formulário com matrícula/CPF imutáveis e confirmação ao sair com alterações não salvas. Ações administrativas são protegidas no frontend e na API. Turmas permanecem fora do escopo obrigatório.
+O backend e o frontend de alunos permitem cadastro, consulta paginada, detalhe, edição e inativação/reativação. Após criar, a interface retorna à lista e informa a matrícula. A lista oferece busca, filtros, paginação numerada e preserva o estado ao voltar. Matrículas são geradas com 8 dígitos numéricos (`AAAA####`); CPF e matrícula são imutáveis na edição. Ações administrativas são protegidas no frontend e na API. Turmas permanecem fora do escopo obrigatório.
 
 ## Fluxo de autenticação atual
 
@@ -96,14 +95,15 @@ O contrato atual envia `usuario` e `senha`. A conta de autenticação não armaz
 - `PUT /api/alunos/{id}`: multipart; ADMIN; atualiza nome, e-mail, telefone, status e foto; CPF e matrícula não são editáveis.
 - `PATCH /api/alunos/{id}/inativar`: ADMIN; inativa sem apagar o histórico.
 - `PATCH /api/alunos/{id}/reativar`: ADMIN; reativa sem apagar o histórico.
-- Fotos: JPEG/PNG, no máximo 5 MB; a listagem retorna `fotoUrl` e não carrega os bytes da imagem na página.
+- Matrícula gerada pelo backend: 8 dígitos numéricos no formato `AAAA####` (ano atual e sequência anual de 4 dígitos).
+- Fotos: JPEG/PNG, no máximo 5 MB; a listagem retorna `fotoUrl` sem carregar os bytes. A tela de detalhes busca a imagem como `Blob` por `HttpClient`, usando o interceptor Bearer, e renderiza um URL temporário que revoga ao sair da tela.
 - `/swagger-ui/**`, `/v3/api-docs/**` e `/h2-console/**`: públicos no `SecurityConfig` atual.
 - Outras rotas: Spring Security exige autenticação.
 - `JwtAuthenticationFilter` procura `Authorization: Bearer <token>`.
 - Senhas são comparadas com BCrypt. O JWT inclui o identificador de usuário no `subject`, claim `role` e validade de uma hora.
 - O JWT fica em `localStorage` sob a chave `siga_auth_token`.
 
-Limitações conhecidas: a área `/inicio` é apenas a entrada protegida e CORS não está configurado no backend; o proxy atual atende somente `ng serve`. Logout, guards, interceptor e matriz de perfis estão implementados. O segredo JWT é configurado pela variável de ambiente `JWT_SECRET`. Detalhes em [`autenticacao-login.md`](autenticacao-login.md).
+Limitações conhecidas: a rota inicial autenticada redireciona para `/alunos`; `/inicio` permanece como alias redirecionado para compatibilidade. CORS não está configurado no backend; o proxy atual atende somente `ng serve`. Logout, guards, interceptor e matriz de perfis estão implementados. O segredo JWT é configurado pela variável de ambiente `JWT_SECRET`. Detalhes em [`autenticacao-login.md`](autenticacao-login.md).
 
 ## Persistência
 

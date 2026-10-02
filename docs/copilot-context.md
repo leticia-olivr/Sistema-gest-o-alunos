@@ -22,7 +22,8 @@ Este arquivo é o resumo curto para orientar ferramentas e pessoas que trabalham
 - Login valida identificador alfanumérico (mínimo 8) e senha (8 a 20 caracteres, letras e números) no frontend e servidor; conta de autenticação não armazena e-mail.
 - Protótipo exige senha de 8 a 20 caracteres contendo letras e números; formulário e API aplicam essa regra.
 - Login inclui logout local, AuthGuard, interceptor Bearer e autorização ADMIN/LEITOR.
-- Módulo de alunos inclui lista, detalhes, cadastro, edição, inativação/reativação e autorização ADMIN na interface e na API; edição detecta mudanças comparando com os valores originais e confirma a saída sem salvar.
+- Módulo de alunos inclui lista, detalhes, cadastro, edição, inativação/reativação e autorização ADMIN na interface e na API. O cadastro retorna à lista com a matrícula; matrículas seguem `AAAA####`; fotos de detalhes são buscadas com Bearer via `HttpClient`. Edição detecta mudanças restauradas e confirma a saída sem salvar.
+- O formulário permite upload e remoção de foto, mas ainda não mostra pré-visualização antes do envio.
 - Pendências e prioridades atuais estão em [`backlog.md`](backlog.md); a persistência local continua volátil por usar H2 em memória.
 
 Não implementar turmas, notas, frequência ou recuperação de senha como parte do escopo obrigatório. Antes de dizer que um requisito está concluído, verificar código e testes.
@@ -92,38 +93,10 @@ http://localhost:4200
 
 ---
 
-# Próximos Passos
+# Status dos módulos
 
-## Fase 2 - Infraestrutura de Banco
-
-1. Configurar Flyway ✅
-2. Criar V1__init.sql ✅
-3. Criar estrutura inicial do banco ✅
-
----
-
-## Fase 3 - Segurança
-
-1. Criar entidade Usuario ✅
-2. Criar UsuarioRepository ✅
-3. Criar AuthController ✅
-4. Implementar JWT ✅
-5. Implementar Login ✅
-
----
-
-## Fase 4 - Layout Frontend
-
-1. Header
-2. Sidebar
-3. Main Layout
-4. Dashboard
-
----
-
-## Status dos módulos
-
-- Gestão de alunos: fluxo principal implementado; consulte [`backlog.md`](backlog.md) para qualidade e entrega pendentes.
+- Autenticação: login JWT, logout local, guards e autorização ADMIN/LEITOR implementados.
+- Gestão de alunos: fluxo principal implementado e pós-login abre a lista; consulte [`backlog.md`](backlog.md) para preview de foto e pendências de qualidade/entrega.
 - Gestão de turmas: fora do escopo obrigatório atual.
 
 ---

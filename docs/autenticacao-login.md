@@ -19,10 +19,13 @@ frontend/src/app/
 │   ├── login.ts
 │   ├── login.html
 │   └── login.css
-├── features/dashboard/
+├── features/alunos/
 └── layout/main-layout/
-├── app.config.ts
-└── app.routes.ts
+  ├── main-layout.ts
+  ├── main-layout.html
+  └── main-layout.css
+app.config.ts
+app.routes.ts
 
 frontend/src/proxy.conf.json
 ```
@@ -39,7 +42,7 @@ frontend/src/proxy.conf.json
 | `core/interceptors/auth.interceptor.ts` | Envia o Bearer e encerra a sessão local após `401` protegido.              |
 | `layout/main-layout/`            | Exibe o botão de logout na área autenticada e hospeda suas rotas.                   |
 | `app.config.ts`                  | Registra os providers da aplicação, incluindo `HttpClient`.                        |
-| `app.routes.ts`                  | Carrega a página de login em `/login` e redireciona a rota inicial para ela.       |
+| `app.routes.ts`                  | Carrega o login em `/login`; após autenticar, a rota protegida padrão leva à lista `/alunos`. `/inicio` redireciona para a lista. |
 | `src/proxy.conf.json`            | Encaminha `/api` para o backend local durante o desenvolvimento Angular.           |
 
 ## Formulário reativo
@@ -67,7 +70,7 @@ No template, `[formGroup]` conecta o formulário à página e `formControlName` 
 3. O componente impede o envio se o formulário for inválido ou se já houver uma requisição em andamento.
 4. O componente chama `AuthService.login()` com os valores do formulário.
 5. O serviço envia uma requisição `POST` para `/api/auth/login`.
-6. Em caso de sucesso, o serviço salva o JWT e o componente navega para a rota protegida de retorno ou para `/inicio`. Em caso de erro, o componente mostra uma mensagem adequada.
+6. Em caso de sucesso, o serviço salva o JWT e o componente navega para a rota protegida de retorno ou para `/alunos`. Em caso de erro, o componente mostra uma mensagem adequada.
 
 O corpo enviado ao backend segue os nomes definidos pelo DTO Java `LoginRequest`:
 
@@ -135,7 +138,7 @@ Uma nova chave invalida os JWTs assinados pela chave anterior; será necessário
 
 ## Limites desta etapa
 
-- O login navega para `/inicio`, uma área protegida mínima com logout; a aplicação também oferece o fluxo de gestão de alunos descrito em [`arquitetura.md`](arquitetura.md).
+- O login abre a lista de alunos em `/alunos`; o layout autenticado oferece logout. A rota antiga `/inicio` redireciona para `/alunos`.
 - O interceptor trata `401` de APIs protegidas como sessão expirada; um `401` do próprio endpoint de login continua sendo exibido como credencial inválida.
 - O token fica no `localStorage`, que pode ser acessado por JavaScript executado na mesma origem. Para aplicações com exigência de segurança maior, avalie uma estratégia de sessão com cookie `HttpOnly`, `Secure` e `SameSite`, em conjunto com o backend.
 
