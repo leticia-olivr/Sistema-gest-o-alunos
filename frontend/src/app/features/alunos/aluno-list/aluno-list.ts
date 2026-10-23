@@ -33,6 +33,7 @@ export class AlunoList implements OnInit, OnDestroy {
   private readonly router = inject(Router);
   private searchSubscription?: Subscription;
 
+  // Estado da tela
   readonly busca = new FormControl('', { nonNullable: true });
   readonly alunos = signal<Aluno[]>([]);
   readonly carregando = signal(true);
@@ -43,8 +44,10 @@ export class AlunoList implements OnInit, OnDestroy {
   readonly tamanhoPagina = 10;
   readonly total = signal(0);
   readonly totalPaginas = signal(0);
+  // Só controla a exibição dos botões; a autorização é feita na API.
   readonly isAdmin = this.authSession.getRole() === 'ADMIN';
 
+  // Lê o estado da URL, escuta a busca com debounce e faz a primeira carga.
   ngOnInit(): void {
     this.aplicarEstadoDaUrl();
     this.consumirMensagemCadastro();
@@ -157,6 +160,7 @@ export class AlunoList implements OnInit, OnDestroy {
     this.pagina.set(Number.isFinite(pageParam) && pageParam >= 0 ? pageParam : 0);
   }
 
+  // Mantém busca, status e página na URL (F5 e "voltar" preservam o filtro).
   private sincronizarUrl(): void {
     const busca = this.busca.value.trim();
     void this.router.navigate([], {
@@ -190,6 +194,7 @@ export class AlunoList implements OnInit, OnDestroy {
     });
   }
 
+  // Ponto único de consulta à API; a requisição é disparada no subscribe.
   private carregar(): void {
     this.carregando.set(true);
     this.erro.set('');

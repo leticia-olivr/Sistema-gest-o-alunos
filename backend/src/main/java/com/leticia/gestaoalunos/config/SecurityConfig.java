@@ -35,8 +35,11 @@ public class SecurityConfig {
                                 "/api/auth/**",
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
-                                "/h2-console/**"
+                                "/h2-console/**",
+                                // Sem isso, um 403 é reencaminhado para /error sem o JWT e vira 401.
+                                "/error"
                         ).permitAll()
+                        // Leitura liberada para ADMIN e LEITOR; escrita somente ADMIN.
                         .requestMatchers(HttpMethod.GET, "/api/alunos/**")
                         .hasAnyRole("ADMIN", "LEITOR")
                         .requestMatchers("/api/alunos/**", "/api/admin/**")

@@ -19,6 +19,7 @@ public interface AlunoRepository extends JpaRepository<Aluno, Long> {
 
         boolean existsByMatricula(String matricula);
 
+    // Projeção sem a coluna foto; filtros opcionais via "IS NULL OR"; paginação feita no banco.
     @Query("""
             SELECT aluno.id AS id,
                    aluno.matricula AS matricula,

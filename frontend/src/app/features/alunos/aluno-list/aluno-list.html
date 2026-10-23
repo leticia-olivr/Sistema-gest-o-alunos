@@ -14,6 +14,7 @@
   }
 
   <div class="list-controls">
+    <!-- Busca: valueChanges com debounce no componente -->
     <mat-form-field appearance="outline" class="search-field">
       <mat-label>Buscar por nome ou matrícula</mat-label>
       <input matInput [formControl]="busca" autocomplete="off" />
@@ -29,6 +30,7 @@
     </mat-form-field>
   </div>
 
+  <!-- Estados: carregando, erro, vazio, tabela -->
   @if (carregando()) {
     <div class="loading-state" role="status" aria-label="Carregando alunos">
       <mat-spinner diameter="32" />
@@ -91,6 +93,7 @@
       </table>
     </div>
 
+    <!-- Paginação vinda da API (page começa em 0) -->
     <footer class="pagination" aria-label="Paginação de alunos">
       <p>{{ primeiroResultado() }}–{{ ultimoResultado() }} de {{ total() }} alunos</p>
       <div class="page-controls">

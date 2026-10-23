@@ -16,6 +16,7 @@ export class AlunoApiService {
     return this.http.get(`${this.endpoint}/${id}/foto`, { responseType: 'blob' });
   }
 
+  // GET /api/alunos?busca=&status=&page=&size=
   listar(params: {
     busca: string;
     status: AlunoStatusFilter;

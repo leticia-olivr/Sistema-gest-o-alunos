@@ -30,6 +30,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         this.usuarioRepository = usuarioRepository;
     }
 
+    // Valida o JWT e registra usuário e papel no SecurityContext; não bloqueia a requisição.
     @Override
     protected void doFilterInternal(
             HttpServletRequest request,

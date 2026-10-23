@@ -47,6 +47,7 @@ public class AlunoController {
         return ResponseEntity.created(location).body(aluno);
     }
 
+    // Listagem paginada com filtros opcionais.
     @GetMapping
     public AlunoPageResponse listar(
             @RequestParam(required = false) String busca,

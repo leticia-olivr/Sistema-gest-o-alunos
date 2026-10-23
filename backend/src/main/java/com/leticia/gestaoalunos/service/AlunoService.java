@@ -63,6 +63,7 @@ public class AlunoService {
         return paraResponse(salvar(aluno));
     }
 
+    // TODOS = sem filtro (null); ordena por nome com desempate por id para a paginação ser estável.
     @Transactional(readOnly = true)
     public AlunoPageResponse listar(String busca, String status, int page, int size) {
         if (page < 0 || size < 1 || size > 100) {
@@ -321,6 +322,7 @@ public class AlunoService {
             java.time.LocalDateTime dataCriacao,
             String fotoMimeType
         ) {
+        // A foto não vai na resposta, apenas a URL para buscá-la.
         String fotoUrl = fotoMimeType == null ? null : "/api/alunos/" + id + "/foto";
         return new AlunoResponse(
             id,

@@ -7,6 +7,7 @@ import { Router } from '@angular/router';
 import { catchError, throwError } from 'rxjs';
 import { AuthSessionService } from '../services/auth-session.service';
 
+// Adiciona o JWT nas chamadas /api e redireciona ao login em caso de 401.
 export const authInterceptor: HttpInterceptorFn = (request, next) => {
   const session = inject(AuthSessionService);
   const router = inject(Router);
